@@ -1,0 +1,73 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-background-page);
+    color: var(--color-text);
+    font-family: "Lora", serif;
+    line-height: 1.5;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+header {
+    background-color: var(--color-background-header);
+    color: var(--color-text-inverted);
+    padding: 1rem;
+}
+
+nav a {
+    color: var(--color-link);
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s, border-bottom 0.2s;
+}
+nav a:hover {
+    background-color: rgba(42, 157, 143, 0.1);
+    border-bottom: 2px solid var(--color-link-hover);
+}
+
+a {
+    color: var(--color-link);
+}
+a:hover {
+    color: var(--color-link-hover);
+}
+
+
+h1, h2, h3 {
+    color: var(--color-accent);
+    margin: 1.5rem 0 0.5rem;
+}
+
+
+section, article, .Nutrition {
+    background-color: #ffffff;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-accent);
+    border-radius: 8px;
+}
+
+.Nutrition {
+    background-color: rgba(42, 157, 143, 0.05);
+}
+
+img {
+    max-width: 200px;
+    height: auto;
+    display: block;
+    margin: 0.5rem 0;
+}
+
+svg.icon {
+    display: inline;
+    height: 2em;
+    width: 2em;
+    vertical-align: top;
+    fill: white;
+}
+
+
+
+
