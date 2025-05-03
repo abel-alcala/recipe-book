@@ -1,16 +1,15 @@
 :root {
-    /*Colors*/
-    --color-background-page: #262624;
-    --color-background-header: #1F1E1D;
-    --color-text-header: #FFFFFF;
-    --color-text: #C1BFB6;
-    --color-text-inverted:#333333;
-    --color-accent: rgb(152, 195, 121);
-    --color-grid: #f2ffeeff;
-    --color-grid-accent: #e7f8edff;
-    --color-accent-alt: #3B91CC;
-    --color-link:       var(--color-accent-alt);
-    --color-link-hover: #0050b3;
+    --color-background-page: #1a1b26;
+    --color-background-header: #16161e;
+    --color-text-header: #c0caf5;
+    --color-text: #a9b1d6;
+    --color-text-inverted: #3e3f5c;
+    --color-accent: #9ece6a;
+    --color-grid: #a9b1d6;
+    --color-grid-accent: #292e42;
+    --color-accent-alt: #7aa2f7;
+    --color-link: var(--color-accent-alt);
+    --color-link-hover: #bb9af7;
 
     /*Fonts*/
     --font-body: 'Open Sans', sans-serif;
@@ -29,4 +28,18 @@
     --border-radius-sm: 4px;
     --border-radius-md: 8px;
     --border-radius-lg: 12px;
+}
+
+/* Light mode */
+body.light-mode {
+    --color-background-page: #f5f7fa;
+    --color-background-header: #ffffff;
+    --color-text: #2c3e50;
+    --color-text-header: #1a202c;
+    --color-accent: #38b2ac;
+    --color-grid: #ffffff;
+    --color-grid-accent: #f0fdfa;
+    --color-accent-alt: #3182ce;
+    --color-link: var(--color-accent-alt);
+    --color-link-hover: #2c5282;
 }
