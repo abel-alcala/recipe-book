@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ingredient: Onion</title>
+    <link rel="stylesheet" href="/styles/page.css">
+    <script src="/packages/proto/src/darkMode.js"></script>
+    <script type="module">
+        import { define } from "@calpoly/mustang";
+        import { IngredientCard } from "./src/ingredentCard.ts";
+        define({ "ingredient-info": IngredientCard });
+    </script>
+</head>
+<body>
+<header>
+    <div class="header-container container">
+        <div class="logo-container">
+            <a href="index.html" class="logo">
+                <svg class="icon">
+                    <use href="icons/icons.svg#utensils"></use>
+                </svg>
+                RecipeBook
+            </a>
+        </div>
+        <div class="main-nav">
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="mealplan.html">Meal Plans</a>
+                <a>Recipes</a>
+            </nav>
+            <div class="user-profile">
+                <span>Welcome, Guest</span>
+                <svg class="icon">
+                    <use href="icons/icons.svg#user"></use>
+                </svg>
+            </div>
+            <label>
+                <input type="checkbox" autocomplete="off" />
+                Dark mode
+            </label>
+        </div>
+    </div>
+    </header>
+    <ingredient-card name="Onion"  image-url="/images/onion.png">
+        <span slot="category">Vegetable</span>
+        <span slot="allergens"> Generally safe for most people</span>
+        <span slot="substitutes">Shallots, leeks, or scallions</span>
+        <ul slot="nutrition" class="Nutrition">
+            <li>Serving Size: 100g</li>
+            <li>Calories: 40</li>
+            <li>Carbohydrates: 9.3g</li>
+            <li>Protein: 1.1g</li>
+            <li>Fat: 0.1g</li>
+            <li>Fiber: 1.7g</li>
+        </ul>
+        <ul slot="recipes">
+            <li><a href="Recipe-spaghetti.html">Classic Spaghetti</a></li>
+        </ul>
+    </ingredient-card>
+</body>
+</html>

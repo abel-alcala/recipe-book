@@ -42,7 +42,7 @@ a:hover {
 
 h1, h2, h3 {
     color: var(--color-accent);
-    margin: 1.5rem 0 0.5rem;
+margin: 1.5rem 0 0.5rem;
 }
 
 
@@ -125,7 +125,7 @@ svg.icon {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
+    margin: var(--spacing-xxl) var(--spacing-xxl) var(--spacing-xxl) var(--spacing-xxl);
 }
 
 .sidebar {
@@ -184,12 +184,12 @@ svg.icon {
     border-top: 1px solid rgba(42, 157, 143, 0.1);
 }
 
+
 /* Recipe Detail Layout */
 .recipe-header {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
 }
 
 .recipe-image {
@@ -197,10 +197,8 @@ svg.icon {
 }
 
 .recipe-image img {
-    width: 100%;
-    max-width: 75%;
+    max-width: 90%;
     height: auto;
-    border-radius: var(--border-radius-md);
 }
 
 .recipe-info { grid-column: 2; }
@@ -222,7 +220,6 @@ svg.icon {
     border-radius: var(--border-radius-sm);
 }
 
-/* Ingredients and Steps Layout for Recipes Pages */
 .recipe-content {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -230,7 +227,6 @@ svg.icon {
 }
 .ingredients-section { grid-column: 1; }
 .steps-section { grid-column: 2; }
-
 
 .chef-profile {
     display: flex;
@@ -279,6 +275,8 @@ section, article, .Nutrition {
     gap: var(--spacing-md);
 }
 
+
+
 nav { padding: var(--spacing-md) 0; }
 nav a {
     color: var(--color-link);
@@ -320,7 +318,7 @@ ol li { margin-bottom: var(--spacing-md); }
 }
 
 /* smaller screens */
-@media (max-width: 768px) {
+@media (max-width: 775px) {
     .page-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: var(--spacing-md);

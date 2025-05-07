@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>RecipeBook - Find and Share Delicious Recipes</title>
+    <title>RecipeBook</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="styles/page.css">
+    <link rel="stylesheet" href="/styles/page.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <script src="src/darkMode.js"></script>
+    <script type="module">
+        import { define } from "@calpoly/mustang";
+        import { IngredientCard } from "./src/ingredentCard.ts";
+        define({ "ingredient-info": IngredientCard });
+    </script>
 </head>
 <body>
 <header>
@@ -24,7 +30,7 @@
         <div class="main-nav">
             <nav>
                 <a href="index.html">Home</a>
-                <a>Meal Plans</a>
+                <a href="mealplan.html">Meal Plans</a>
                 <a>Recipes</a>
             </nav>
             <div class="user-profile">
@@ -33,22 +39,26 @@
                     <use href="icons/icons.svg#user"></use>
                 </svg>
             </div>
+            <label>
+                <input type="checkbox" autocomplete="off" />
+                Dark mode
+            </label>
         </div>
     </div>
 </header>
 
-<div class="container">
+<main class="container">
     <div class="page-grid">
         <div class="full-width">
             <h1>Welcome to RecipeBook</h1>
-            <p>Find and share your favorite recipes with our community of food lovers.</p>
+            <p>Find and share your favorite recipes with our community!</p>
         </div>
 
         <div class="main-content">
             <h2>Featured Recipes</h2>
             <div class="card-list">
                 <div class="recipe-card">
-                    <img src="images/spaghetti.png" alt="Classic Spaghetti">
+                    <img src="/images/spaghetti.png" alt="Classic Spaghetti">
                     <div class="recipe-card-content">
                         <h3>Classic Spaghetti</h3>
                         <p>A traditional Italian pasta dish featuring a rich meat sauce served over spaghetti.</p>
@@ -65,7 +75,7 @@
             <section>
                 <h2>Featured Chefs</h2>
                 <div class="chef-profile">
-                    <img src="images/chef-abel.jpeg" alt="Chef Abel">
+                    <img src="/images/chef-abel.jpeg" alt="Chef Abel">
                     <h3>Chef Abel</h3>
                     <p>Specializes in traditional Italian and Mexican cuisine.</p>
                     <a href="Chef-Abel.html">View Profile</a>
@@ -80,9 +90,17 @@
                     <li><a>Quick Meals</a></li>
                     <li><a>Vegetarian</a></li>
                 </ul>
+                <trade-card
+                        id="'sec2"
+                        title="Order Types"
+                        href="orders.html"
+                        link-text="Read More">
+                    Quick summary of market, limit, and stop orders.
+                </trade-card>
             </section>
         </div>
     </div>
-</div>
+</main>
+<footer> Recipe Book </footer>
 </body>
 </html>
