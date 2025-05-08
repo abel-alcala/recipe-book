@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.html",
   "scripts": {
-    "start": "http-server -p 3000",
+    "start": "http-server dist 3000",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx vite",
     "build": "npx tsc && npx vite build"
