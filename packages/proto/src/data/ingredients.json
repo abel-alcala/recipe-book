@@ -1,0 +1,112 @@
+{
+  "ingredients": [
+    {
+      "name": "Garlic",
+      "imageUrl": "/images/garlic.png",
+      "category": "Vegetable",
+      "allergens": "Typically safe",
+      "substitutes": "Shallots",
+      "nutrition": [
+        { "label": "Serving Size", "value": "100g" },
+        { "label": "Calories", "value": "149" },
+        { "label": "Carbohydrates", "value": "25g" },
+        { "label": "Protein", "value": "6.4g" },
+        { "label": "Fat", "value": "0.5g" },
+        { "label": "Fiber", "value": "2.1g" }
+      ],
+      "recipes": [
+        { "name": "Classic Spaghetti", "href": "Recipe-spaghetti.html" }
+      ]
+    },
+    {
+      "name": "Ground Beef",
+      "imageUrl": "/images/ground-beef.png",
+      "category": "Meat",
+      "allergens": "None",
+      "substitutes": "Ground turkey or plant-based ground meat",
+      "nutrition": [
+        { "label": "Serving Size", "value": "100g" },
+        { "label": "Calories", "value": "254" },
+        { "label": "Carbohydrates", "value": "0g" },
+        { "label": "Protein", "value": "17.17g" },
+        { "label": "Fat", "value": "20g" },
+        { "label": "Fiber", "value": "0g" }
+      ],
+      "recipes": [
+        { "name": "Classic Spaghetti", "href": "Recipe-spaghetti.html" }
+      ]
+    },
+    {
+      "name": "Spaghetti Noodles",
+      "imageUrl": "/images/noodles-spaghetti.png",
+      "category": "Pasta",
+      "allergens": "Contains gluten",
+      "substitutes": "Gluten-free pasta varieties",
+      "nutrition": [
+        { "label": "Serving Size", "value": "100g" },
+        { "label": "Calories", "value": "371" },
+        { "label": "Carbohydrates", "value": "75g" },
+        { "label": "Protein", "value": "13g" },
+        { "label": "Fat", "value": "1.5g" },
+        { "label": "Fiber", "value": "3.2g" }
+      ],
+      "recipes": [
+        { "name": "Classic Spaghetti", "href": "Recipe-spaghetti.html" }
+      ]
+    },
+    {
+      "name": "Onion",
+      "imageUrl": "/images/onion.png",
+      "category": "Vegetable",
+      "allergens": "Generally safe for most people",
+      "substitutes": "Shallots, leeks, or scallions",
+      "nutrition": [
+        { "label": "Serving Size", "value": "100g" },
+        { "label": "Calories", "value": "40" },
+        { "label": "Carbohydrates", "value": "9.3g" },
+        { "label": "Protein", "value": "1.1g" },
+        { "label": "Fat", "value": "0.1g" },
+        { "label": "Fiber", "value": "1.7g" }
+      ],
+      "recipes": [
+        { "name": "Classic Spaghetti", "href": "Recipe-spaghetti.html" }
+      ]
+    },
+    {
+      "name": "Tomato",
+      "imageUrl": "/images/tomato.png",
+      "category": "Vegetable",
+      "allergens": "None",
+      "substitutes": "Cherry tomatoes, canned tomatoes",
+      "nutrition": [
+        { "label": "Serving Size", "value": "100g" },
+        { "label": "Calories", "value": "18" },
+        { "label": "Carbohydrates", "value": "3.92g" },
+        { "label": "Protein", "value": "0.88g" },
+        { "label": "Fat", "value": "0.2g" },
+        { "label": "Fiber", "value": "1.2g" }
+      ],
+      "recipes": [
+        { "name": "Classic Spaghetti", "href": "Recipe-spaghetti.html" }
+      ]
+    },
+    {
+      "name": "Olive Oil",
+      "imageUrl": "/images/oil.png",
+      "category": "Oil / Fat",
+      "allergens": "None",
+      "substitutes": "Vegetable oil or canola oil",
+      "nutrition": [
+        { "label": "Serving Size", "value": "100g" },
+        { "label": "Calories", "value": "884" },
+        { "label": "Carbohydrates", "value": "0g" },
+        { "label": "Protein", "value": "0g" },
+        { "label": "Fat", "value": "100g" },
+        { "label": "Fiber", "value": "0g" }
+      ],
+      "recipes": [
+        { "name": "Classic Spaghetti", "href": "Recipe-spaghetti.html" }
+      ]
+    }
+  ]
+}

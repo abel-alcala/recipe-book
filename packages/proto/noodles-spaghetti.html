@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>Ingredient: Spaghetti</title>
     <link rel="stylesheet" href="/styles/page.css">
-    <script src="/packages/proto/src/darkMode.js"></script>
+    <script src="src/darkMode.js"></script>
     <script type="module">
         import { define } from "@calpoly/mustang";
-        import { IngredientCard } from "./src/ingredentCard.ts";
-        define({ "ingredient-info": IngredientCard });
+        import { IngredientCardJson } from "./src/IngredientCardJson.ts";
+        define({ "ingredient-info": IngredientCardJson });
     </script>
 </head>
 <body>
@@ -41,21 +41,6 @@
         </div>
     </div>
 </header>
-    <ingredient-card name="Spaghetti Noodles" image-url="/images/noodles-spaghetti.png">
-        <span slot="category"> Pasta</span>
-        <span slot="allergens"> Contains gluten</span>
-        <span slot="substitutes"> Gluten-free pasta varieties</span>
-        <ul slot="nutrition" class="Nutrition">
-            <li>Serving Size: 100g</li>
-            <li>Calories: 371</li>
-            <li>Carbohydrates: 75g</li>
-            <li>Protein: 13g</li>
-            <li>Fat: 1.5g</li>
-            <li>Fiber: 3.2g</li>
-        </ul>
-        <ul slot="recipes">
-            <li><a href="Recipe-spaghetti.html">Classic Spaghetti</a></li>
-        </ul>
-    </ingredient-card>
+<ingredient-info src="src/data/ingredients.json" name="Spaghetti Noodles"></ingredient-info>
 </body>
 </html>

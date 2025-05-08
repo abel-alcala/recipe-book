@@ -36,10 +36,10 @@ body.light-mode {
     --color-background-header: #ffffff;
     --color-text: #2c3e50;
     --color-text-header: #1a202c;
-    --color-accent: #38b2ac;
+    --color-accent: #2c5282;
     --color-grid: #ffffff;
     --color-grid-accent: #f0fdfa;
     --color-accent-alt: #3182ce;
     --color-link: var(--color-accent-alt);
-    --color-link-hover: #2c5282;
+    --color-link-hover: #38b2ac;
 }

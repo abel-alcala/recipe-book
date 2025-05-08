@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>Ingredient: Tomato</title>
     <link rel="stylesheet" href="/styles/page.css">
-    <script src="/packages/proto/src/darkMode.js"></script>
+    <script src="src/darkMode.js"></script>
     <script type="module">
         import { define } from "@calpoly/mustang";
-        import { IngredientCard } from "./src/ingredentCard.ts";
-        define({ "ingredient-info": IngredientCard });
+        import { IngredientCardJson } from "./src/IngredientCardJson.ts";
+        define({ "ingredient-info": IngredientCardJson });
     </script>
 </head>
 <body>
@@ -41,21 +41,6 @@
         </div>
     </div>
 </header>
-    <ingredient-card name="Tomato" image-url="/images/tomato.png">
-        <span slot="category">Vegetable</span>
-        <span slot="allergens"> None</span>
-        <span slot="substitutes"> Cherry tomatoes, canned tomatoes</span>
-        <ul slot="nutrition" class="Nutrition">
-            <li>Serving Size: 100g</li>
-            <li>Calories: 18</li>
-            <li>Carbohydrates: 3.92g</li>
-            <li>Protein: 0.88g</li>
-            <li>Fat: 0.2g</li>
-            <li>Fiber: 1.2g</li>
-        </ul>
-        <ul slot="recipes">
-            <li><a href="Recipe-spaghetti.html">Classic Spaghetti</a></li>
-        </ul>
-    </ingredient-card>
+    <ingredient-info src="src/data/ingredients.json" name="Tomato"></ingredient-info>
 </body>
 </html>
