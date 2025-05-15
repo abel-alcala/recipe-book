@@ -1,0 +1,18 @@
+{
+  "name": "Garlic",
+  "imageUrl": "/images/garlic.png",
+  "category": "Vegetable",
+  "allergens": "Typically safe",
+  "substitutes": "Shallots",
+  "nutrition": [
+    { "label": "Serving Size", "value": "100g" },
+    { "label": "Calories", "value": "149" },
+    { "label": "Carbohydrates", "value": "25g" },
+    { "label": "Protein", "value": "6.4g" },
+    { "label": "Fat", "value": "0.5g" },
+    { "label": "Fiber", "value": "2.1g" }
+  ],
+  "recipes": [
+    { "name": "Classic Spaghetti", "href": "Recipe-spaghetti.html" }
+  ]
+}

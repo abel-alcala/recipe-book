@@ -1,6 +1,7 @@
 {
   "ingredients": [
     {
+      "idName": "garlic",
       "name": "Garlic",
       "imageUrl": "/images/garlic.png",
       "category": "Vegetable",
@@ -19,6 +20,7 @@
       ]
     },
     {
+      "idName": "ground-beef",
       "name": "Ground Beef",
       "imageUrl": "/images/ground-beef.png",
       "category": "Meat",
@@ -37,6 +39,7 @@
       ]
     },
     {
+      "idName": "spaghetti-noodles",
       "name": "Spaghetti Noodles",
       "imageUrl": "/images/noodles-spaghetti.png",
       "category": "Pasta",
@@ -55,6 +58,7 @@
       ]
     },
     {
+      "idName": "onion",
       "name": "Onion",
       "imageUrl": "/images/onion.png",
       "category": "Vegetable",
@@ -73,6 +77,7 @@
       ]
     },
     {
+      "idName": "tomato",
       "name": "Tomato",
       "imageUrl": "/images/tomato.png",
       "category": "Vegetable",
@@ -91,6 +96,7 @@
       ]
     },
     {
+      "idName": "olive-oil",
       "name": "Olive Oil",
       "imageUrl": "/images/oil.png",
       "category": "Oil / Fat",
