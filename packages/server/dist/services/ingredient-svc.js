@@ -52,4 +52,23 @@ async function get(idName) {
   if (!ingredient) throw `${idName} Not Found`;
   return ingredient;
 }
-var ingredient_svc_default = { index, get };
+function create(json) {
+  const ingredient = new IngredientModel(json);
+  return ingredient.save();
+}
+function update(idName, ingredient) {
+  return IngredientModel.findOneAndUpdate({ idName }, ingredient, {
+    new: true
+  }).then((updated) => {
+    if (!updated) throw `${idName} not updated`;
+    else return updated;
+  });
+}
+function remove(idName) {
+  return IngredientModel.findOneAndDelete({ idName }).then(
+    (deleted) => {
+      if (!deleted) throw `${idName} not deleted`;
+    }
+  );
+}
+var ingredient_svc_default = { index, get, create, update, remove };

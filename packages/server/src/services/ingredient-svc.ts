@@ -37,4 +37,29 @@ async function get(idName: string): Promise<IngredientData> {
     return ingredient;
 }
 
-export default { index, get };
+function create(json: IngredientData): Promise<IngredientData> {
+    const ingredient = new IngredientModel(json);
+    return ingredient.save();
+}
+
+function update(
+    idName: string,
+    ingredient: IngredientData
+): Promise<IngredientData> {
+    return IngredientModel.findOneAndUpdate({ idName }, ingredient, {
+        new: true
+    }).then((updated) => {
+        if (!updated) throw `${idName} not updated`;
+        else return updated as IngredientData;
+    });
+}
+
+function remove(idName: string): Promise<void> {
+    return IngredientModel.findOneAndDelete({ idName }).then(
+        (deleted) => {
+            if (!deleted) throw `${idName} not deleted`;
+        }
+    );
+}
+
+export default { index, get, create, update, remove };

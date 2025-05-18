@@ -23,29 +23,17 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var import_express = __toESM(require("express"));
 var import_mongo = require("./services/mongo");
-var import_ingredient_svc = __toESM(require("./services/ingredient-svc"));
+var import_ingredients = __toESM(require("./routes/ingredients"));
 (0, import_mongo.connect)("recipes");
 const app = (0, import_express.default)();
 const port = process.env.PORT || 3e3;
 const staticDir = process.env.STATIC || "public";
 app.use(import_express.default.static(staticDir));
+app.use(import_express.default.json());
 app.get("/hello", (req, res) => {
   res.send("Hello, World");
 });
-app.get("/ingredients/:idName", async (req, res) => {
-  try {
-    const ingredient = await import_ingredient_svc.default.get(req.params.idName);
-    res.json(ingredient);
-  } catch (err) {
-    if (typeof err === "string" && err.includes("Not Found")) {
-      res.status(404).json({ error: err });
-    } else if (err instanceof Error && err.message.includes("Not Found")) {
-      res.status(404).json({ error: err.message });
-    } else {
-      res.status(500).json({ error: "Server error" });
-    }
-  }
-});
+app.use("/api/ingredients", import_ingredients.default);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
