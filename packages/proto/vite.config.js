@@ -1,6 +1,6 @@
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import {dirname, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {defineConfig} from 'vite'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -18,7 +18,8 @@ export default defineConfig({
                 oliveOil: resolve(__dirname, 'olive-oil.html'),
                 onion: resolve(__dirname, 'onion.html'),
                 recipeSpaghetti: resolve(__dirname, 'Recipe-spaghetti.html'),
-                tomato: resolve(__dirname, 'tomato.html')
+                tomato: resolve(__dirname, 'tomato.html'),
+                login: resolve(__dirname, 'login.html')
             },
         },
     },

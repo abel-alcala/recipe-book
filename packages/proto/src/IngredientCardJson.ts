@@ -1,6 +1,7 @@
-import { LitElement, html, css } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import {css, html, LitElement} from 'lit';
+import {property, state} from 'lit/decorators.js';
 import reset from './styles/styles.css.ts';
+import {Auth, Observer} from '@calpoly/mustang';
 
 interface NutritionItem {
     label: string;
@@ -32,6 +33,27 @@ export class IngredientCardJson extends LitElement {
     @state() ingredients: IngredientData[] = [];
     @state() currentIngredient: IngredientData | null = null;
 
+    _authObserver = new Observer<Auth.Model>(this, "blazing:auth");
+    _user?: Auth.User;
+
+    get authorization() {
+        return (
+            this._user?.authenticated && {
+                Authorization: `Bearer ${this._user.token}`
+            }
+        );
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this._authObserver.observe((auth: Auth.Model) => {
+            this._user = auth.user;
+            if (this._user?.authenticated) {
+                this.loadData();
+            }
+        });
+    }
+
     updated(changedProperties: Map<string, unknown>) {
         if (changedProperties.has('src') || changedProperties.has('name')) {
             this.loadData();
@@ -42,7 +64,10 @@ export class IngredientCardJson extends LitElement {
         if (!this.src) return;
 
         try {
-            const res = await fetch(this.src);
+            const res = await fetch(this.src, {
+                headers: this.authorization
+            });
+
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             const contentType = res.headers.get('content-type');
@@ -87,7 +112,7 @@ export class IngredientCardJson extends LitElement {
                 border-radius: var(--border-radius-sm);
                 padding-right: var(--spacing-lg);
             }
-            
+
 
             h1 {
                 font-family: "Lora", serif;;
@@ -138,9 +163,11 @@ export class IngredientCardJson extends LitElement {
             a:hover {
                 text-decoration: underline;
             }
+
             .recipes {
                 font-family: "Lora", serif;;
                 color: var(--color-accent);
+
                 li {
                     margin-left: var(--spacing-md);
                 }
@@ -149,8 +176,14 @@ export class IngredientCardJson extends LitElement {
     ];
 
     render() {
+        if (!this._user?.authenticated) {
+            return html`
+                <div class="loading">Please log in to view ingredient information</div>`;
+        }
+
         if (!this.currentIngredient) {
-            return html`<div class="loading">${this.ingredients.length ? 'Ingredient not found' : 'Loading...'}</div>`;
+            return html`
+                <div class="loading">${this.ingredients.length ? 'Ingredient not found' : 'Loading...'}</div>`;
         }
 
         return html`
@@ -174,8 +207,8 @@ export class IngredientCardJson extends LitElement {
                         <strong>Nutritional Information:</strong>
                         <ul class="Nutrition">
                             ${this.currentIngredient.nutrition.map(item => html`
-                <li>${item.label}: ${item.value}</li>
-              `)}
+                                <li>${item.label}: ${item.value}</li>
+                            `)}
                         </ul>
                     </div>
                 </div>
@@ -183,7 +216,7 @@ export class IngredientCardJson extends LitElement {
                     <h2>Used In Recipes:</h2>
                     <ul>
                         ${this.currentIngredient.recipes.map(recipe => html`
-              <li><a href="${recipe.href}">${recipe.name}</a></li>`)}
+                            <li><a href="${recipe.href}">${recipe.name}</a></li>`)}
                     </ul>
                 </div>
             </div>

@@ -3,44 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Ingredient: Ground Beef</title>
-    <link rel="stylesheet" href="/styles/page.css">
+    <link href="/styles/page.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+          rel="stylesheet">
     <script src="src/darkMode.js"></script>
     <script type="module">
-        import { define } from "@calpoly/mustang";
-        import { IngredientCardJson } from "./src/IngredientCardJson.ts";
-        define({ "ingredient-info": IngredientCardJson });
+        import {Auth, define} from "@calpoly/mustang";
+        import {HeaderElement} from "/src/header.ts";
+        import {IngredientCardJson} from "./src/IngredientCardJson.ts";
+
+        define({
+            "blz-header": HeaderElement,
+            "mu-auth": Auth.Provider,
+            "ingredient-info": IngredientCardJson
+        });
+        HeaderElement.initializeOnce();
     </script>
 </head>
 <body>
-<header>
-    <div class="header-container container">
-        <div class="logo-container">
-            <a href="index.html" class="logo">
-                <svg class="icon">
-                    <use href="icons/icons.svg#utensils"></use>
-                </svg>
-                RecipeBook
-            </a>
-        </div>
-        <div class="main-nav">
-            <nav>
-                <a href="index.html">Home</a>
-                <a>Meal Plans</a>
-                <a>Recipes</a>
-            </nav>
-            <div class="user-profile">
-                <span>Welcome, Guest</span>
-                <svg class="icon">
-                    <use href="icons/icons.svg#user"></use>
-                </svg>
-            </div>
-            <label>
-                <input type="checkbox" autocomplete="off" />
-                Dark mode
-            </label>
-        </div>
-    </div>
-</header>
-<ingredient-info name="Ground Beef" src="src/data/ingredients.json"></ingredient-info>
+<mu-auth provides="blazing:auth">
+    <blz-header></blz-header>
+    <ingredient-info name="Ground Beef" src="src/data/ingredients.json"></ingredient-info>
+</mu-auth>
 </body>
 </html>
