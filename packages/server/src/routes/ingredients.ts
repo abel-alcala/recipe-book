@@ -1,5 +1,5 @@
-import express, { Request, Response } from "express";
-import { IngredientData } from "../models/ingredient";
+import express, {Request, Response} from "express";
+import {IngredientData} from "../models/ingredient";
 import Ingredients from "../services/ingredient-svc";
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.get("/", (_: Request, res: Response) => {
 
 // GET ingredient by idName
 router.get("/:idName", (req: Request, res: Response) => {
-    const { idName } = req.params;
+    const {idName} = req.params;
 
     Ingredients.get(idName)
         .then((ingredient: IngredientData) => res.json(ingredient))
@@ -33,7 +33,7 @@ router.post("/", (req: Request, res: Response) => {
 
 // PUT an ingredient
 router.put("/:idName", (req: Request, res: Response) => {
-    const { idName } = req.params;
+    const {idName} = req.params;
     const updatedIngredient = req.body;
 
     Ingredients.update(idName, updatedIngredient)
@@ -43,7 +43,7 @@ router.put("/:idName", (req: Request, res: Response) => {
 
 // DELETE an ingredient
 router.delete("/:idName", (req: Request, res: Response) => {
-    const { idName } = req.params;
+    const {idName} = req.params;
 
     Ingredients.remove(idName)
         .then(() => res.status(204).end())

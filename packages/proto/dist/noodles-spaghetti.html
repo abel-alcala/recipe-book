@@ -3,41 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Ingredient: Spaghetti</title>
-    <link rel="stylesheet" href="/styles/page.css">
+    <link href="/styles/page.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+          rel="stylesheet">
     <script src="src/darkMode.js"></script>
-  <script type="module" crossorigin src="/assets/noodlesSpaghetti-B4sx1z2Q.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/IngredientCardJson-C_W9pUNE.js">
+  <script type="module" crossorigin src="/assets/noodlesSpaghetti-DseCEsHP.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/state-BwZx0JEs.js">
+  <link rel="modulepreload" crossorigin href="/assets/header-DZd1mZyI.js">
+  <link rel="modulepreload" crossorigin href="/assets/IngredientCardJson-D9nkJSm9.js">
 </head>
 <body>
-<header>
-    <div class="header-container container">
-        <div class="logo-container">
-            <a href="index.html" class="logo">
-                <svg class="icon">
-                    <use href="icons/icons.svg#utensils"></use>
-                </svg>
-                RecipeBook
-            </a>
-        </div>
-        <div class="main-nav">
-            <nav>
-                <a href="index.html">Home</a>
-                <a href="mealplan.html">Meal Plans</a>
-                <a>Recipes</a>
-            </nav>
-            <div class="user-profile">
-                <span>Welcome, Guest</span>
-                <svg class="icon">
-                    <use href="icons/icons.svg#user"></use>
-                </svg>
-            </div>
-            <label>
-                <input type="checkbox" autocomplete="off" />
-                Dark mode
-            </label>
-        </div>
-    </div>
-</header>
-<ingredient-info src="src/data/ingredients.json" name="Spaghetti Noodles"></ingredient-info>
+<mu-auth provides="blazing:auth">
+    <blz-header></blz-header>
+    <ingredient-info name="Spaghetti Noodles" src="src/data/ingredients.json"></ingredient-info>
+</mu-auth>
 </body>
 </html>

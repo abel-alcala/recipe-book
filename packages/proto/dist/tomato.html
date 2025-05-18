@@ -5,39 +5,15 @@
     <title>Ingredient: Tomato</title>
     <link rel="stylesheet" href="/styles/page.css">
     <script src="src/darkMode.js"></script>
-  <script type="module" crossorigin src="/assets/tomato-B4sx1z2Q.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/IngredientCardJson-C_W9pUNE.js">
+  <script type="module" crossorigin src="/assets/tomato-DseCEsHP.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/state-BwZx0JEs.js">
+  <link rel="modulepreload" crossorigin href="/assets/header-DZd1mZyI.js">
+  <link rel="modulepreload" crossorigin href="/assets/IngredientCardJson-D9nkJSm9.js">
 </head>
 <body>
-<header>
-    <div class="header-container container">
-        <div class="logo-container">
-            <a href="index.html" class="logo">
-                <svg class="icon">
-                    <use href="icons/icons.svg#utensils"></use>
-                </svg>
-                RecipeBook
-            </a>
-        </div>
-        <div class="main-nav">
-            <nav>
-                <a href="index.html">Home</a>
-                <a href="mealplan.html">Meal Plans</a>
-                <a>Recipes</a>
-            </nav>
-            <div class="user-profile">
-                <span>Welcome, Guest</span>
-                <svg class="icon">
-                    <use href="icons/icons.svg#user"></use>
-                </svg>
-            </div>
-            <label>
-                <input type="checkbox" autocomplete="off" />
-                Dark mode
-            </label>
-        </div>
-    </div>
-</header>
+<mu-auth provides="blazing:auth">
+    <blz-header></blz-header>
     <ingredient-info src="src/data/ingredients.json" name="Tomato"></ingredient-info>
+</mu-auth>
 </body>
 </html>

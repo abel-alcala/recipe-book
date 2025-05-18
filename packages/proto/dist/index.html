@@ -1,94 +1,71 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>RecipeBook</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/styles/page.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link href="/styles/page.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+          rel="stylesheet">
     <script src="src/darkMode.js"></script>
+  <script type="module" crossorigin src="/assets/main-BgpovDM6.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/state-BwZx0JEs.js">
+  <link rel="modulepreload" crossorigin href="/assets/header-DZd1mZyI.js">
 </head>
 <body>
-<header>
-    <div class="header-container container">
-        <div class="logo-container">
-            <a href="index.html" class="logo">
-                <svg class="icon">
-                    <use href="icons/icons.svg#utensils"></use>
-                </svg>
-                RecipeBook
-            </a>
-        </div>
-        <div class="main-nav">
-            <nav>
-                <a href="index.html">Home</a>
-                <a href="mealplan.html">Meal Plans</a>
-                <a>Recipes</a>
-            </nav>
-            <div class="user-profile">
-                <span>Welcome, Guest</span>
-                <svg class="icon">
-                    <use href="icons/icons.svg#user"></use>
-                </svg>
+<mu-auth provides="blazing:auth">
+    <blz-header></blz-header>
+
+    <main class="container">
+        <div class="page-grid">
+            <div class="full-width">
+                <h1>Welcome to RecipeBook</h1>
+                <p>Find and share your favorite recipes with our community!</p>
             </div>
-            <label>
-                <input type="checkbox" autocomplete="off" />
-                Dark mode
-            </label>
-        </div>
-    </div>
-</header>
 
-<main class="container">
-    <div class="page-grid">
-        <div class="full-width">
-            <h1>Welcome to RecipeBook</h1>
-            <p>Find and share your favorite recipes with our community!</p>
-        </div>
-
-        <div class="main-content">
-            <h2>Featured Recipes</h2>
-            <div class="card-list">
-                <div class="recipe-card">
-                    <img src="/images/spaghetti.png" alt="Classic Spaghetti">
-                    <div class="recipe-card-content">
-                        <h3>Classic Spaghetti</h3>
-                        <p>A traditional Italian pasta dish featuring a rich meat sauce served over spaghetti.</p>
-                    </div>
-                    <div class="recipe-card-footer">
-                        <span>1 hour 30 minutes</span>
-                        <a href="Recipe-spaghetti.html">View Recipe →</a>
+            <div class="main-content">
+                <h2>Featured Recipes</h2>
+                <div class="card-list">
+                    <div class="recipe-card">
+                        <img alt="Classic Spaghetti" src="/images/spaghetti.png">
+                        <div class="recipe-card-content">
+                            <h3>Classic Spaghetti</h3>
+                            <p>A traditional Italian pasta dish featuring a rich meat sauce served over spaghetti.</p>
+                        </div>
+                        <div class="recipe-card-footer">
+                            <span>1 hour 30 minutes</span>
+                            <a href="Recipe-spaghetti.html">View Recipe →</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="sidebar">
-            <section>
-                <h2>Featured Chefs</h2>
-                <div class="chef-profile">
-                    <img src="/images/chef-abel.jpeg" alt="Chef Abel">
-                    <h3>Chef Abel</h3>
-                    <p>Specializes in traditional Italian and Mexican cuisine.</p>
-                    <a href="Chef-Abel.html">View Profile</a>
-                </div>
-            </section>
+            <div class="sidebar">
+                <section>
+                    <h2>Featured Chefs</h2>
+                    <div class="chef-profile">
+                        <img alt="Chef Abel" src="/images/chef-abel.jpeg">
+                        <h3>Chef Abel</h3>
+                        <p>Specializes in traditional Italian and Mexican cuisine.</p>
+                        <a href="Chef-Abel.html">View Profile</a>
+                    </div>
+                </section>
 
-            <section>
-                <h2>Popular Cuisines</h2>
-                <ul>
-                    <li><a href="cuisine-italian.html">Italian</a></li>
-                    <li><a>Mexican</a></li>
-                    <li><a>Quick Meals</a></li>
-                    <li><a>Vegetarian</a></li>
-                </ul>
-            </section>
+                <section>
+                    <h2>Popular Cuisines</h2>
+                    <ul>
+                        <li><a href="cuisine-italian.html">Italian</a></li>
+                        <li><a>Mexican</a></li>
+                        <li><a>Quick Meals</a></li>
+                        <li><a>Vegetarian</a></li>
+                    </ul>
+                </section>
+            </div>
         </div>
-    </div>
-</main>
-<footer> Recipe Book </footer>
+    </main>
+    <footer> Recipe Book</footer>
+</mu-auth>
 </body>
 </html>

@@ -33,16 +33,20 @@ export class IngredientCardJson extends LitElement {
     @state() ingredients: IngredientData[] = [];
     @state() currentIngredient: IngredientData | null = null;
 
+
+
     _authObserver = new Observer<Auth.Model>(this, "blazing:auth");
     _user?: Auth.User;
 
-    get authorization() {
-        return (
-            this._user?.authenticated && {
-                Authorization: `Bearer ${this._user.token}`
-            }
-        );
+    get authorization(): { Authorization?: string } {
+        if (this._user && this._user.authenticated)
+            return {
+                Authorization:
+                    `Bearer ${(this._user as Auth.AuthenticatedUser).token}`
+            };
+        else return {};
     }
+
 
     connectedCallback() {
         super.connectedCallback();
@@ -64,10 +68,7 @@ export class IngredientCardJson extends LitElement {
         if (!this.src) return;
 
         try {
-            const res = await fetch(this.src, {
-                headers: this.authorization
-            });
-
+            const res = await fetch(this.src, { headers: this.authorization });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             const contentType = res.headers.get('content-type');
