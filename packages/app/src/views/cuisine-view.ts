@@ -1,70 +1,41 @@
-import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators.js";
-import { Auth, Observer } from "@calpoly/mustang";
-import { globalStyles } from "../styles/globalStyles.css.ts";
+import {css, html} from "lit";
+import {property, state} from "lit/decorators.js";
+import {View} from "@calpoly/mustang";
+import {globalStyles} from "../styles/globalStyles.css.ts";
+import {Msg} from "../messages";
+import {Model} from "../model";
+import {CuisineData} from "server/models";
 
-interface Cuisine {
-    name: string;
-    region: string;
-    description: string;
-    popularIngredients: string[];
-    typicalDishes: string[];
-    recipes: { name: string; href: string; imageUrl?: string }[];
-}
-
-export class CuisineViewElement extends LitElement {
-    @property({ attribute: "cuisine-id" })
+export class CuisineViewElement extends View<Model, Msg> {
+    @property({attribute: "cuisine-id"})
     cuisineId?: string;
 
     @state()
-    cuisine?: Cuisine;
-
-    @state()
-    loading = true;
-
-    _authObserver = new Observer<Auth.Model>(this, "recipebook:auth");
-    _user?: Auth.User;
-
-    get authorization(): { Authorization?: string } {
-        if (this._user && this._user.authenticated)
-            return {
-                Authorization: `Bearer ${(this._user as Auth.AuthenticatedUser).token}`
-            };
-        else return {};
+    get cuisine(): CuisineData | undefined {
+        return this.model.cuisine;
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this._authObserver.observe((auth: Auth.Model) => {
-            this._user = auth.user;
-            if (this._user?.authenticated) {
-                this.loadCuisine();
-            }
-        });
+    constructor() {
+        super("recipebook:model");
     }
 
-    updated(changedProperties: Map<string, unknown>) {
-        if (changedProperties.has('cuisineId') && this._user?.authenticated) {
-            this.loadCuisine();
-        }
-    }
+    attributeChangedCallback(
+        name: string,
+        oldValue: string | null,
+        newValue: string | null
+    ) {
+        super.attributeChangedCallback(name, oldValue, newValue);
 
-    async loadCuisine() {
-        if (!this.cuisineId) return;
-
-        this.loading = true;
-        try {
-            const res = await fetch(`/api/cuisines/${this.cuisineId}`, {
-                headers: this.authorization
-            });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            this.cuisine = await res.json();
-        } catch (err) {
-            console.error('Failed to load cuisine:', err);
-        } finally {
-            this.loading = false;
+        if (
+            name === "cuisine-id" &&
+            oldValue !== newValue &&
+            newValue
+        ) {
+            console.log("Loading cuisine:", newValue);
+            this.dispatchMessage([
+                "cuisine/load",
+                {cuisineId: newValue}
+            ]);
         }
     }
 
@@ -141,19 +112,17 @@ export class CuisineViewElement extends LitElement {
             .recipe-card:hover h3 {
                 color: var(--color-link-hover);
             }
+
+            .loading {
+                text-align: center;
+                padding: var(--spacing-xl);
+                color: var(--color-text);
+            }
         `
     ];
 
     render() {
-        if (!this._user?.authenticated) {
-            return html`
-                <div class="container">
-                    <div class="loading">Please log in to view cuisine information</div>
-                </div>
-            `;
-        }
-
-        if (this.loading) {
+        if (!this.cuisine && this.cuisineId) {
             return html`
                 <div class="container">
                     <div class="loading">Loading cuisine...</div>

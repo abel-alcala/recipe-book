@@ -1,13 +1,13 @@
-import { css, html } from "lit";
-import { property, state } from "lit/decorators.js";
-import { View } from "@calpoly/mustang";
-import { globalStyles } from "../styles/globalStyles.css.ts";
-import { Msg } from "../messages";
-import { Model } from "../model";
-import { ChefData } from "server/models";
+import {css, html} from "lit";
+import {property, state} from "lit/decorators.js";
+import {View} from "@calpoly/mustang";
+import {globalStyles} from "../styles/globalStyles.css.ts";
+import {Msg} from "../messages";
+import {Model} from "../model";
+import {ChefData} from "server/models";
 
 export class ChefViewElement extends View<Model, Msg> {
-    @property({ attribute: "chef-id" })
+    @property({attribute: "chef-id"})
     chefId?: string;
 
     @state()
@@ -34,7 +34,7 @@ export class ChefViewElement extends View<Model, Msg> {
             console.log("Loading chef:", newValue);
             this.dispatchMessage([
                 "chef/load",
-                { chefId: newValue }
+                {chefId: newValue}
             ]);
         }
     }

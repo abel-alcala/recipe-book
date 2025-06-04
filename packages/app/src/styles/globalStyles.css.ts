@@ -86,6 +86,7 @@ export const componentStyles = css`
     }
 
     /* Card styles */
+
     .card, .recipe-card, .chef-profile, section {
         background: var(--color-background-card);
         border: 1px solid var(--color-accent);
@@ -143,7 +144,6 @@ export const componentStyles = css`
         display: grid;
         grid-template-columns: repeat(12, 1fr);
         gap: var(--spacing-lg);
-        margin: var(--spacing-xl) 0;
     }
 
     .full-width {

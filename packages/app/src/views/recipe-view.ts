@@ -1,86 +1,41 @@
-import { css, html, LitElement } from "lit";
+import { css, html } from "lit";
 import { property, state } from "lit/decorators.js";
-import { Auth, Observer } from "@calpoly/mustang";
+import { View } from "@calpoly/mustang";
 import { globalStyles } from "../styles/globalStyles.css.ts";
+import { Msg } from "../messages";
+import { Model } from "../model";
+import { RecipeData } from "server/models";
 
-interface Ingredient {
-    name: string;
-    href: string;
-}
-
-interface MealPlan {
-    name: string;
-    href: string;
-}
-
-interface Recipe {
-    name: string;
-    description: string;
-    imageUrl: string;
-    cookingTime: string;
-    servingSize: string;
-    difficulty: string;
-    chef: { name: string; href: string };
-    cuisine: { name: string; href: string };
-    ingredients: Ingredient[];
-    mealPlans: MealPlan[];
-    steps: string[];
-}
-
-export class RecipeViewElement extends LitElement {
+export class RecipeViewElement extends View<Model, Msg> {
     @property({ attribute: "recipe-id" })
     recipeId?: string;
 
     @state()
-    recipe?: Recipe;
-
-    @state()
-    loading = true;
-
-    _authObserver = new Observer<Auth.Model>(this, "recipebook:auth");
-    _user?: Auth.User;
-
-    get authorization(): { Authorization?: string } {
-        if (this._user && this._user.authenticated)
-            return {
-                Authorization: `Bearer ${(this._user as Auth.AuthenticatedUser).token}`
-            };
-        else return {};
+    get recipe(): RecipeData | undefined {
+        return this.model.recipe;
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this._authObserver.observe((auth: Auth.Model) => {
-            this._user = auth.user;
-            if (this._user?.authenticated) {
-                this.loadRecipe();
-            }
-        });
-
+    constructor() {
+        super("recipebook:model");
     }
 
-    updated(changedProperties: Map<string, unknown>) {
-        if (changedProperties.has('recipeId') && this._user?.authenticated) {
-            this.loadRecipe();
-        }
-    }
+    attributeChangedCallback(
+        name: string,
+        oldValue: string | null,
+        newValue: string | null
+    ) {
+        super.attributeChangedCallback(name, oldValue, newValue);
 
-    async loadRecipe() {
-        if (!this.recipeId) return;
-
-        this.loading = true;
-        try {
-            const res = await fetch(`/api/recipes/${this.recipeId}`, {
-                headers: this.authorization
-            });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            this.recipe = await res.json();
-        } catch (err) {
-            console.error('Failed to load recipe:', err);
-        } finally {
-            this.loading = false;
+        if (
+            name === "recipe-id" &&
+            oldValue !== newValue &&
+            newValue
+        ) {
+            console.log("Loading recipe:", newValue);
+            this.dispatchMessage([
+                "recipe/load",
+                { recipeId: newValue }
+            ]);
         }
     }
 
@@ -148,6 +103,12 @@ export class RecipeViewElement extends LitElement {
                 text-decoration: none;
             }
 
+            .loading {
+                text-align: center;
+                padding: var(--spacing-xl);
+                color: var(--color-text);
+            }
+
             @media (max-width: 768px) {
                 .recipe-image img {
                     max-width: 100%;
@@ -157,18 +118,16 @@ export class RecipeViewElement extends LitElement {
     ];
 
     render() {
-        if (!this._user?.authenticated) {
+        if (!this.recipe && this.recipeId) {
             return html`
-                <div class="loading">Please log in to view recipe information</div>
+                <div class="loading">Loading recipe...</div>
             `;
         }
 
-        if (this.loading) {
-            return html`<div class="loading">Loading recipe...</div>`;
-        }
-
         if (!this.recipe) {
-            return html`<div class="loading">Recipe not found</div>`;
+            return html`
+                <div class="loading">Recipe not found</div>
+            `;
         }
 
         return html`

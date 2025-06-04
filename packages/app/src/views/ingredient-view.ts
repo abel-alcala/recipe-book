@@ -1,74 +1,41 @@
-import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators.js";
-import { Auth, Observer } from "@calpoly/mustang";
-import { globalStyles } from "../styles/globalStyles.css.ts";
+import {css, html} from "lit";
+import {property, state} from "lit/decorators.js";
+import {View} from "@calpoly/mustang";
+import {globalStyles} from "../styles/globalStyles.css.ts";
+import {Msg} from "../messages";
+import {Model} from "../model";
+import {IngredientData} from "server/models";
 
-interface Ingredient {
-    name: string;
-    description: string;
-    nutritionalInfo?: {
-        calories?: number;
-        protein?: string;
-        carbs?: string;
-        fat?: string;
-    };
-    storageInstructions?: string;
-    recipesUsing?: { name: string; href: string }[];
-}
-
-export class IngredientViewElement extends LitElement {
-    @property({ attribute: "ingredient-id" })
+export class IngredientViewElement extends View<Model, Msg> {
+    @property({attribute: "ingredient-id"})
     ingredientId?: string;
 
     @state()
-    ingredient?: Ingredient;
-
-    @state()
-    loading = true;
-
-    _authObserver = new Observer<Auth.Model>(this, "recipebook:auth");
-    _user?: Auth.User;
-
-    get authorization(): { Authorization?: string } {
-        if (this._user && this._user.authenticated)
-            return {
-                Authorization: `Bearer ${(this._user as Auth.AuthenticatedUser).token}`
-            };
-        else return {};
+    get ingredient(): IngredientData | undefined {
+        return this.model.ingredient;
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this._authObserver.observe((auth: Auth.Model) => {
-            this._user = auth.user;
-            if (this._user?.authenticated) {
-                this.loadIngredient();
-            }
-        });
+    constructor() {
+        super("recipebook:model");
     }
 
-    updated(changedProperties: Map<string, unknown>) {
-        if (changedProperties.has('ingredientId') && this._user?.authenticated) {
-            this.loadIngredient();
-        }
-    }
+    attributeChangedCallback(
+        name: string,
+        oldValue: string | null,
+        newValue: string | null
+    ) {
+        super.attributeChangedCallback(name, oldValue, newValue);
 
-    async loadIngredient() {
-        if (!this.ingredientId) return;
-
-        this.loading = true;
-        try {
-            const res = await fetch(`/api/ingredients/${this.ingredientId}`, {
-                headers: this.authorization
-            });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            this.ingredient = await res.json();
-        } catch (err) {
-            console.error('Failed to load ingredient:', err);
-        } finally {
-            this.loading = false;
+        if (
+            name === "ingredient-id" &&
+            oldValue !== newValue &&
+            newValue
+        ) {
+            console.log("Loading ingredient:", newValue);
+            this.dispatchMessage([
+                "ingredient/load",
+                {ingredientId: newValue}
+            ]);
         }
     }
 
@@ -99,6 +66,40 @@ export class IngredientViewElement extends LitElement {
                 border-radius: var(--border-radius-sm);
             }
 
+            .top-section {
+                display: flex;
+            }
+
+            .details {
+                padding-left: var(--spacing-lg);
+            }
+
+            .nutrition-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: var(--spacing-md);
+                margin-top: var(--spacing-md);
+            }
+
+            .nutrition-item {
+                text-align: center;
+                padding: var(--spacing-md);
+                background: var(--color-background-card);
+                border-radius: var(--border-radius-sm);
+            }
+
+            .nutrition-value {
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: var(--color-primary);
+                margin-bottom: var(--spacing-xs);
+            }
+
+            .nutrition-label {
+                font-size: 0.9rem;
+                color: var(--color-text-muted);
+            }
+
             ul {
                 list-style: none;
                 padding: 0;
@@ -120,19 +121,17 @@ export class IngredientViewElement extends LitElement {
                 background-color: var(--color-background-hover);
                 text-decoration: none;
             }
+
+            .loading {
+                text-align: center;
+                padding: var(--spacing-xl);
+                color: var(--color-text);
+            }
         `
     ];
 
     render() {
-        if (!this._user?.authenticated) {
-            return html`
-                <div class="container">
-                    <div class="loading">Please log in to view ingredient information</div>
-                </div>
-            `;
-        }
-
-        if (this.loading) {
+        if (!this.ingredient && this.ingredientId) {
             return html`
                 <div class="container">
                     <div class="loading">Loading ingredient...</div>
@@ -152,44 +151,41 @@ export class IngredientViewElement extends LitElement {
             <div class="container">
                 <div class="ingredient-card">
                     <h1>${this.ingredient.name}</h1>
-                    <p class="description">${this.ingredient.description}</p>
+                    <div class="top-section">
+                        ${this.ingredient.imageUrl ? html`
+                            <img src="${this.ingredient.imageUrl}" alt="${this.ingredient.name}"
+                                 style="max-width: 250px;">
+                        ` : ''}
+                        <div class="details">
+                            <p><strong>Category:</strong> ${this.ingredient.category}</p>
+                            ${this.ingredient.allergens ? html`
+                                <p><strong>Allergens:</strong> ${this.ingredient.allergens}</p>
+                            ` : ''}
+                            ${this.ingredient.substitutes ? html`
+                                <p><strong>Substitutes:</strong> ${this.ingredient.substitutes}</p>
+                            ` : ''}
+                        </div>
+                    </div>
 
-                    ${this.ingredient.nutritionalInfo ? html`
+                    ${this.ingredient.nutrition && this.ingredient.nutrition.length > 0 ? html`
                         <div class="section">
-                            <h2>Nutritional Information (per serving)</h2>
+                            <h2>Nutritional Information</h2>
                             <div class="nutrition-grid">
-                                <div class="nutrition-item">
-                                    <div class="nutrition-value">${this.ingredient.nutritionalInfo.calories}</div>
-                                    <div class="nutrition-label">Calories</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="nutrition-value">${this.ingredient.nutritionalInfo.protein}</div>
-                                    <div class="nutrition-label">Protein</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="nutrition-value">${this.ingredient.nutritionalInfo.carbs}</div>
-                                    <div class="nutrition-label">Carbs</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="nutrition-value">${this.ingredient.nutritionalInfo.fat}</div>
-                                    <div class="nutrition-label">Fat</div>
-                                </div>
+                                ${this.ingredient.nutrition.map(item => html`
+                                    <div class="nutrition-item">
+                                        <div class="nutrition-value">${item.value}</div>
+                                        <div class="nutrition-label">${item.label}</div>
+                                    </div>
+                                `)}
                             </div>
                         </div>
                     ` : ''}
 
-                    ${this.ingredient.storageInstructions ? html`
-                        <div class="section">
-                            <h2>Storage Instructions</h2>
-                            <p>${this.ingredient.storageInstructions}</p>
-                        </div>
-                    ` : ''}
-
-                    ${this.ingredient.recipesUsing && this.ingredient.recipesUsing.length > 0 ? html`
+                    ${this.ingredient.recipes && this.ingredient.recipes.length > 0 ? html`
                         <div class="section">
                             <h2>Used in Recipes</h2>
                             <ul>
-                                ${this.ingredient.recipesUsing.map(recipe => html`
+                                ${this.ingredient.recipes.map(recipe => html`
                                     <li><a href="${recipe.href}">${recipe.name}</a></li>
                                 `)}
                             </ul>

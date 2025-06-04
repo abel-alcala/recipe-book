@@ -1,63 +1,34 @@
-import { css, html, LitElement } from "lit";
-import { state } from "lit/decorators.js";
-import { globalStyles } from "../styles/globalStyles.css.ts";
+import {css, html} from "lit";
+import {state} from "lit/decorators.js";
+import {View} from "@calpoly/mustang";
+import {globalStyles} from "../styles/globalStyles.css.ts";
+import {Msg} from "../messages";
+import {Model} from "../model";
+import {MealPlanData, RecipeData} from "server/models";
 
-interface Recipe {
-    idName: string;
-    name: string;
-    description: string;
-    cookingTime: string;
-    imageUrl: string;
-    servingSize: string;
-    difficulty: string;
-    chef: {
-        name: string;
-        href: string;
-    };
-    cuisine: {
-        name: string;
-        href: string;
-    };
-    ingredients: Array<{
-        name: string;
-        href: string;
-    }>;
-    mealPlans: Array<{
-        name: string;
-        href: string;
-    }>;
-    steps: string[];
-}
-
-interface MealPlan {
-    idName: string;
-    name: string;
-    duration: string;
-    purpose: string;
-    mealTypes: string[];
-    recipes: Array<{
-        name: string;
-        href: string;
-        day?: string;
-        mealType?: string;
-    }>;
-}
-
-export class HomeViewElement extends LitElement {
+export class HomeViewElement extends View<Model, Msg> {
     @state()
     private viewMode: 'recipes' | 'mealplans' = 'recipes';
 
     @state()
-    private recipes: Recipe[] = [];
+    get recipes(): RecipeData[] {
+        return this.model.recipes || [];
+    }
 
     @state()
-    private mealPlans: MealPlan[] = [];
+    get mealPlans(): MealPlanData[] {
+        return this.model.mealplans || [];
+    }
 
-    @state()
-    private loading = true;
+    constructor() {
+        super("recipebook:model");
+    }
 
-    @state()
-    private error: string | null = null;
+    connectedCallback() {
+        super.connectedCallback();
+        this.dispatchMessage(["recipes/load", {}]);
+        this.dispatchMessage(["mealplans/load", {}]);
+    }
 
     static styles = [
         globalStyles,
@@ -81,16 +52,22 @@ export class HomeViewElement extends LitElement {
             }
 
             @keyframes pulse {
-                0%, 100% { transform: scale(1); opacity: 0.5; }
-                50% { transform: scale(1.1); opacity: 0.8; }
+                0%, 100% {
+                    transform: scale(1);
+                    opacity: 0.5;
+                }
+                50% {
+                    transform: scale(1.1);
+                    opacity: 0.8;
+                }
             }
 
             .hero-section h1 {
                 font-size: 3rem;
                 margin-bottom: var(--spacing-md);
-                background: linear-gradient(135deg, 
-                    var(--color-primary) 0%, 
-                    var(--color-accent-alt) 100%);
+                background: linear-gradient(135deg,
+                var(--color-primary) 0%,
+                var(--color-accent-alt) 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 position: relative;
@@ -107,6 +84,7 @@ export class HomeViewElement extends LitElement {
             }
 
             /* View Toggle */
+
             .view-toggle {
                 display: flex;
                 justify-content: center;
@@ -138,7 +116,7 @@ export class HomeViewElement extends LitElement {
 
             .toggle-button.active {
                 color: var(--color-text-inverted);
-                
+
             }
 
             .toggle-indicator {
@@ -146,16 +124,16 @@ export class HomeViewElement extends LitElement {
                 top: var(--spacing-xs);
                 height: calc(100% - var(--spacing-sm));
                 width: calc(50% - var(--spacing-xs));
-                background: linear-gradient(135deg, 
-                    var(--color-accent) 0%, 
-                    var(--color-accent-alt) 100%);
+                background: linear-gradient(135deg,
+                var(--color-accent) 0%,
+                var(--color-accent-alt) 100%);
                 border-radius: var(--border-radius-md);
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: 0 4px 12px rgba(158, 206, 106, 0.3);
             }
 
             .toggle-indicator.recipes {
-                transform: translateX(-50%); 
+                transform: translateX(-50%);
             }
 
             .toggle-indicator.mealplans {
@@ -204,9 +182,9 @@ export class HomeViewElement extends LitElement {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: linear-gradient(135deg, 
-                    transparent 0%, 
-                    rgba(158, 206, 106, 0.1) 100%);
+                background: linear-gradient(135deg,
+                transparent 0%,
+                rgba(158, 206, 106, 0.1) 100%);
                 opacity: 0;
                 transition: opacity 0.3s ease;
             }
@@ -290,10 +268,9 @@ export class HomeViewElement extends LitElement {
             }
 
             .difficulty-easy { background: #10b981; }
-            .difficulty-medium { background: #f59e0b; }
+            .difficulty-medium { background: #f59e0b; } 
             .difficulty-hard { background: #ef4444; }
-
-            /* Loading State */
+            
             .loading-container {
                 display: flex;
                 flex-direction: column;
@@ -313,44 +290,14 @@ export class HomeViewElement extends LitElement {
             }
 
             @keyframes spin {
-                to { transform: rotate(360deg); }
+                to {
+                    transform: rotate(360deg);
+                }
             }
 
             .loading-text {
                 color: var(--color-text-muted);
                 font-size: 1.1rem;
-            }
-
-            /* Error State */
-            .error-container {
-                text-align: center;
-                padding: var(--spacing-xxl);
-                background: var(--color-background-card);
-                border-radius: var(--border-radius-lg);
-                border: 1px solid rgba(239, 68, 68, 0.3);
-            }
-
-            .error-message {
-                color: #ef4444;
-                font-size: 1.1rem;
-                margin-bottom: var(--spacing-lg);
-            }
-
-            .retry-button {
-                background: var(--color-accent);
-                color: white;
-                padding: var(--spacing-sm) var(--spacing-xl);
-                border: none;
-                border-radius: var(--border-radius-md);
-                font-size: 1rem;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .retry-button:hover {
-                background: var(--color-accent-alt);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(158, 206, 106, 0.3);
             }
 
             /* Empty State */
@@ -366,8 +313,7 @@ export class HomeViewElement extends LitElement {
                 margin-bottom: var(--spacing-lg);
                 fill: var(--color-border);
             }
-
-            /* Responsive */
+            
             @media (max-width: 768px) {
                 .hero-section h1 {
                     font-size: 2rem;
@@ -388,48 +334,16 @@ export class HomeViewElement extends LitElement {
         `
     ];
 
-    connectedCallback() {
-        super.connectedCallback();
-        this.fetchData();
-    }
-
-    private async fetchData() {
-        this.loading = true;
-        this.error = null;
-
-        try {
-            const [recipesResponse, mealPlansResponse] = await Promise.all([
-                fetch('/api/recipes'),
-                fetch('/api/mealplans')
-            ]);
-
-            if (!recipesResponse.ok || !mealPlansResponse.ok) {
-                throw new Error('Failed to fetch data from server');
-            }
-
-            const recipesData = await recipesResponse.json();
-            const mealPlansData = await mealPlansResponse.json();
-
-            if (!Array.isArray(recipesData) || !Array.isArray(mealPlansData)) {
-                throw new Error('Invalid data format received from server');
-            }
-
-            this.recipes = recipesData;
-            this.mealPlans = mealPlansData;
-        } catch (err) {
-            this.error = 'Unable to load content';
-            console.error('Error fetching data:', err);
-        } finally {
-            this.loading = false;
-        }
-    }
-
     private handleViewToggle(mode: 'recipes' | 'mealplans') {
         this.viewMode = mode;
     }
 
     private renderContent() {
-        if (this.loading) {
+        const items = this.viewMode === 'recipes' ? this.recipes : this.mealPlans;
+        const isLoading = items.length === 0 &&
+            (this.viewMode === 'recipes' ? !this.model.recipes : !this.model.mealplans);
+
+        if (isLoading) {
             return html`
                 <div class="loading-container">
                     <div class="loading-spinner"></div>
@@ -437,19 +351,6 @@ export class HomeViewElement extends LitElement {
                 </div>
             `;
         }
-
-        if (this.error) {
-            return html`
-                <div class="error-container">
-                    <div class="error-message">${this.error}</div>
-                    <button class="retry-button" @click=${this.fetchData}>
-                        Try Again
-                    </button>
-                </div>
-            `;
-        }
-
-        const items = this.viewMode === 'recipes' ? this.recipes : this.mealPlans;
 
         if (items.length === 0) {
             return html`
@@ -470,21 +371,21 @@ export class HomeViewElement extends LitElement {
         `;
     }
 
-    private renderCard(item: Recipe | MealPlan) {
+    private renderCard(item: RecipeData | MealPlanData) {
         const isRecipe = 'cookingTime' in item;
         const href = isRecipe
-            ? `/app/recipe/${(item as Recipe).idName}`
-            : `/app/mealplan/${(item as MealPlan).idName}`;
+            ? `/app/recipe/${(item as RecipeData).idName}`
+            : `/app/mealplan/${(item as MealPlanData).idName}`;
 
         if (isRecipe) {
-            const recipe = item as Recipe;
+            const recipe = item as RecipeData;
             return html`
                 <a href=${href} class="item-card">
-                    <img 
-                        class="item-image" 
-                        src=${recipe.imageUrl || '/images/placeholder.jpg'} 
-                        alt=${recipe.name}
-                        loading="lazy"
+                    <img
+                            class="item-image"
+                            src=${recipe.imageUrl || '/images/placeholder.jpg'}
+                            alt=${recipe.name}
+                            loading="lazy"
                     >
                     <div class="item-content">
                         <h3>${recipe.name}</h3>
@@ -516,7 +417,7 @@ export class HomeViewElement extends LitElement {
                 </a>
             `;
         } else {
-            const mealPlan = item as MealPlan;
+            const mealPlan = item as MealPlanData;
             return html`
                 <a href=${href} class="item-card">
                     <div class="item-content">
@@ -558,15 +459,15 @@ export class HomeViewElement extends LitElement {
 
                 <div class="view-toggle">
                     <div class="toggle-indicator ${this.viewMode}"></div>
-                    <button 
-                        class="toggle-button ${this.viewMode === 'recipes' ? 'active' : ''}"
-                        @click=${() => this.handleViewToggle('recipes')}
+                    <button
+                            class="toggle-button ${this.viewMode === 'recipes' ? 'active' : ''}"
+                            @click=${() => this.handleViewToggle('recipes')}
                     >
                         Recipes
                     </button>
-                    <button 
-                        class="toggle-button ${this.viewMode === 'mealplans' ? 'active' : ''}"
-                        @click=${() => this.handleViewToggle('mealplans')}
+                    <button
+                            class="toggle-button ${this.viewMode === 'mealplans' ? 'active' : ''}"
+                            @click=${() => this.handleViewToggle('mealplans')}
                     >
                         Meal Plans
                     </button>

@@ -10,6 +10,10 @@ import cuisines from "./routes/cuisine-routes";
 import mealplans from "./routes/mealplan-routes";
 import recipes from "./routes/recipe-routes";
 export type { ChefData, RecipeReference } from "./models/chef-model";
+export type { RecipeData, ChefReference, CuisineReference, IngredientReference, MealPlanReference } from "./models/recipe-model";
+export type { CuisineData, RecipeReference as CuisineRecipeReference } from "./models/cuisine-model";
+export type { IngredientData, NutritionItem, RecipeItem } from "./models/ingredient";
+export type { MealPlanData, RecipeReference as MealPlanRecipeReference } from "./models/mealplan-model";
 
 connect("recipes");
 

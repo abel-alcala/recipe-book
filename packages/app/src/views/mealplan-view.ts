@@ -1,74 +1,41 @@
-import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators.js";
-import { Auth, Observer } from "@calpoly/mustang";
-import { globalStyles } from "../styles/globalStyles.css.ts";
+import {css, html} from "lit";
+import {property, state} from "lit/decorators.js";
+import {View} from "@calpoly/mustang";
+import {globalStyles} from "../styles/globalStyles.css.ts";
+import {Msg} from "../messages";
+import {Model} from "../model";
+import {MealPlanData} from "server/models";
 
-interface MealPlan {
-    name: string;
-    duration: string;
-    purpose: string;
-    mealTypes: string[];
-    recipes: {
-        name: string;
-        href: string;
-        day?: string;
-        mealType?: string
-    }[];
-}
-
-export class MealPlanViewElement extends LitElement {
-    @property({ attribute: "mealplan-id" })
+export class MealPlanViewElement extends View<Model, Msg> {
+    @property({attribute: "mealplan-id"})
     mealplanId?: string;
 
     @state()
-    mealplan?: MealPlan;
-
-    @state()
-    loading = true;
-
-    _authObserver = new Observer<Auth.Model>(this, "recipebook:auth");
-    _user?: Auth.User;
-
-    get authorization(): { Authorization?: string } {
-        if (this._user && this._user.authenticated)
-            return {
-                Authorization: `Bearer ${(this._user as Auth.AuthenticatedUser).token}`
-            };
-        else return {};
+    get mealplan(): MealPlanData | undefined {
+        return this.model.mealplan;
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this._authObserver.observe((auth: Auth.Model) => {
-            this._user = auth.user;
-            if (this._user?.authenticated) {
-                this.loadMealPlan();
-            }
-        });
+    constructor() {
+        super("recipebook:model");
     }
 
-    updated(changedProperties: Map<string, unknown>) {
-        if (changedProperties.has('mealplanId') && this._user?.authenticated) {
-            this.loadMealPlan();
-        }
-    }
+    attributeChangedCallback(
+        name: string,
+        oldValue: string | null,
+        newValue: string | null
+    ) {
+        super.attributeChangedCallback(name, oldValue, newValue);
 
-    async loadMealPlan() {
-        if (!this.mealplanId) return;
-
-        this.loading = true;
-        try {
-            const res = await fetch(`/api/mealplans/${this.mealplanId}`, {
-                headers: this.authorization
-            });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            this.mealplan = await res.json();
-        } catch (err) {
-            console.error('Failed to load meal plan:', err);
-        } finally {
-            this.loading = false;
+        if (
+            name === "mealplan-id" &&
+            oldValue !== newValue &&
+            newValue
+        ) {
+            console.log("Loading meal plan:", newValue);
+            this.dispatchMessage([
+                "mealplan/load",
+                {mealplanId: newValue}
+            ]);
         }
     }
 
@@ -156,19 +123,25 @@ export class MealPlanViewElement extends LitElement {
                 flex-wrap: wrap;
                 margin-top: var(--spacing-md);
             }
+
+            .meal-type-tag {
+                background: var(--color-accent);
+                color: var(--color-text-inverted);
+                padding: var(--spacing-xs) var(--spacing-sm);
+                border-radius: var(--border-radius-sm);
+                font-size: 0.9rem;
+            }
+
+            .loading {
+                text-align: center;
+                padding: var(--spacing-xl);
+                color: var(--color-text);
+            }
         `
     ];
 
     render() {
-        if (!this._user?.authenticated) {
-            return html`
-                <div class="container">
-                    <div class="loading">Please log in to view meal plans</div>
-                </div>
-            `;
-        }
-
-        if (this.loading) {
+        if (!this.mealplan && this.mealplanId) {
             return html`
                 <div class="container">
                     <div class="loading">Loading meal plan...</div>
@@ -214,7 +187,7 @@ export class MealPlanViewElement extends LitElement {
                             </div>
                         `)}
                     </div>
-                    
+
                     <div class="meal-types">
                         ${this.mealplan.mealTypes.map(mealType => html`
                             <span class="meal-type-tag">${mealType}</span>
