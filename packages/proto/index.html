@@ -15,15 +15,15 @@
         import {HeaderElement} from "/src/header.ts";
 
         define({
-            "blz-header": HeaderElement,
+            "app-header": HeaderElement,
             "mu-auth": Auth.Provider
         });
         HeaderElement.initializeOnce();
     </script>
 </head>
 <body>
-<mu-auth provides="blazing:auth">
-    <blz-header></blz-header>
+<mu-auth provides="recipebook:auth">
+    <app-header></app-header>
 
     <main class="container">
         <div class="page-grid">

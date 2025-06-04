@@ -47,7 +47,6 @@ export class IngredientCardJson extends LitElement {
         else return {};
     }
 
-
     connectedCallback() {
         super.connectedCallback();
         this._authObserver.observe((auth: Auth.Model) => {
