@@ -73,23 +73,11 @@ export class HomeViewElement extends LitElement {
 
             .hero-section {
                 text-align: center;
-                padding: var(--spacing-xxl) 0;
-                
+                padding-top: var(--spacing-xxl) 0;
+                padding-bottom: var(--spacing-md);
                 border-radius: var(--border-radius-lg);
-                margin-bottom: var(--spacing-xxl);
                 position: relative;
                 overflow: hidden;
-            }
-
-            .hero-section::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                right: -50%;
-                width: 200%;
-                height: 200%;
-                
-                animation: pulse 15s ease-in-out infinite;
             }
 
             @keyframes pulse {

@@ -9,6 +9,7 @@ import chefs from "./routes/chef-routes";
 import cuisines from "./routes/cuisine-routes";
 import mealplans from "./routes/mealplan-routes";
 import recipes from "./routes/recipe-routes";
+export type { ChefData, RecipeReference } from "./models/chef-model";
 
 connect("recipes");
 
@@ -20,13 +21,13 @@ app.use(express.static(staticDir));
 app.use(express.json());
 app.use(cors());
 
-app.get("/hello", (req: Request, res: Response) => {
+app.get("/hello", (_: Request, res: Response) => {
     res.send("Hello, World");
 });
 
 app.use("/auth", auth);
 
-app.use("/app", (req: Request, res: Response) => {
+app.use("/app", (_: Request, res: Response) => {
     const indexHtml = path.resolve(staticDir, "index.html");
     fs.readFile(indexHtml, { encoding: "utf8" }).then((html) =>
         res.send(html)

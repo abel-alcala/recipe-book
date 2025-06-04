@@ -1,68 +1,41 @@
-import { css, html, LitElement } from "lit";
+import { css, html } from "lit";
 import { property, state } from "lit/decorators.js";
-import { Auth, Observer } from "@calpoly/mustang";
+import { View } from "@calpoly/mustang";
 import { globalStyles } from "../styles/globalStyles.css.ts";
+import { Msg } from "../messages";
+import { Model } from "../model";
+import { ChefData } from "server/models";
 
-interface Chef {
-    name: string;
-    bio: string;
-    imageUrl: string;
-    favoriteDishes: string[];
-    recipes: { name: string; href: string }[];
-}
-
-export class ChefViewElement extends LitElement {
+export class ChefViewElement extends View<Model, Msg> {
     @property({ attribute: "chef-id" })
     chefId?: string;
 
     @state()
-    chef?: Chef;
-
-    @state()
-    loading = true;
-
-    _authObserver = new Observer<Auth.Model>(this, "recipebook:auth");
-    _user?: Auth.User;
-
-    get authorization(): { Authorization?: string } {
-        if (this._user && this._user.authenticated)
-            return {
-                Authorization: `Bearer ${(this._user as Auth.AuthenticatedUser).token}`
-            };
-        else return {};
+    get chef(): ChefData | undefined {
+        return this.model.chef;
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this._authObserver.observe((auth: Auth.Model) => {
-            this._user = auth.user;
-            if (this._user?.authenticated) {
-                this.loadChef();
-            }
-        });
+    constructor() {
+        super("recipebook:model");
     }
 
-    updated(changedProperties: Map<string, unknown>) {
-        if (changedProperties.has('chefId') && this._user?.authenticated) {
-            this.loadChef();
-        }
-    }
+    attributeChangedCallback(
+        name: string,
+        oldValue: string | null,
+        newValue: string | null
+    ) {
+        super.attributeChangedCallback(name, oldValue, newValue);
 
-    async loadChef() {
-        if (!this.chefId) return;
-
-        this.loading = true;
-        try {
-            const res = await fetch(`/api/chefs/${this.chefId}`, {
-                headers: this.authorization
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            this.chef = await res.json();
-        } catch (err) {
-            console.error('Failed to load chef:', err);
-        } finally {
-            this.loading = false;
+        if (
+            name === "chef-id" &&
+            oldValue !== newValue &&
+            newValue
+        ) {
+            console.log("Loading chef:", newValue);
+            this.dispatchMessage([
+                "chef/load",
+                { chefId: newValue }
+            ]);
         }
     }
 
@@ -122,19 +95,18 @@ export class ChefViewElement extends LitElement {
                 background-color: var(--color-background-hover);
                 text-decoration: none;
             }
+
+            .loading {
+                text-align: center;
+                padding: var(--spacing-xl);
+                color: var(--color-text);
+            }
         `
     ];
 
     render() {
-        if (!this._user?.authenticated) {
-            return html`
-                <div class="container">
-                    <div class="loading">Please log in to view chef profiles</div>
-                </div>
-            `;
-        }
-
-        if (this.loading) {
+        this.model.chef
+        if (!this.chef && this.chefId) {
             return html`
                 <div class="container">
                     <div class="loading">Loading chef profile...</div>

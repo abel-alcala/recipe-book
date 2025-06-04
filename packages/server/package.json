@@ -6,6 +6,11 @@
   "author": "",
   "type": "commonjs",
   "main": "dist/index.js",
+  "exports": {
+    "./models": {
+      "import": "./src/index.ts"
+    }
+  },
   "scripts": {
     "dev": "nodemon",
     "build": "npx etsc",
