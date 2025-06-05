@@ -33,7 +33,21 @@ __export(chef_routes_exports, {
 module.exports = __toCommonJS(chef_routes_exports);
 var import_express = __toESM(require("express"));
 var import_chef_service = __toESM(require("../services/chef-service"));
+var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
+var import_dotenv = __toESM(require("dotenv"));
+import_dotenv.default.config();
 const router = import_express.default.Router();
+function getUsernameFromToken(req) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) return null;
+  try {
+    const decoded = import_jsonwebtoken.default.verify(token, process.env.TOKEN_SECRET || "NOT_A_SECRET");
+    return decoded.username;
+  } catch {
+    return null;
+  }
+}
 router.get("/", (_, res) => {
   import_chef_service.default.index().then((list) => res.json(list)).catch((err) => res.status(500).send(err));
 });
@@ -43,6 +57,15 @@ router.get("/:idName", (req, res) => {
 });
 router.post("/", (req, res) => {
   const newChef = req.body;
+  const username = getUsernameFromToken(req);
+  if (!username) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  if (newChef.idName !== username) {
+    res.status(403).send("You can only create a chef profile for yourself");
+    return;
+  }
   import_chef_service.default.create(newChef).then(
     (chef) => res.status(201).json(chef)
   ).catch((err) => res.status(500).send(err));
@@ -50,10 +73,32 @@ router.post("/", (req, res) => {
 router.put("/:idName", (req, res) => {
   const { idName } = req.params;
   const updatedChef = req.body;
+  const username = getUsernameFromToken(req);
+  if (!username) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  if (idName !== username) {
+    res.status(403).send("You can only edit your own chef profile");
+    return;
+  }
+  if (updatedChef.idName !== idName) {
+    res.status(400).send("Cannot change chef ID");
+    return;
+  }
   import_chef_service.default.update(idName, updatedChef).then((chef) => res.json(chef)).catch((err) => res.status(404).send(err));
 });
 router.delete("/:idName", (req, res) => {
   const { idName } = req.params;
+  const username = getUsernameFromToken(req);
+  if (!username) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  if (idName !== username) {
+    res.status(403).send("You can only delete your own chef profile");
+    return;
+  }
   import_chef_service.default.remove(idName).then(() => res.status(204).end()).catch((err) => res.status(404).send(err));
 });
 var chef_routes_default = router;

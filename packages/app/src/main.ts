@@ -7,6 +7,7 @@ import { AppHeader } from "./components/app-header";
 import { HomeViewElement } from "./views/home-view";
 import { RecipeViewElement } from "./views/recipe-view";
 import { ChefViewElement } from "./views/chef-view";
+import { ChefEditElement} from "./components/profile-edit";
 import { IngredientViewElement } from "./views/ingredient-view";
 import { CuisineViewElement } from "./views/cuisine-view";
 import { MealPlanViewElement } from "./views/mealplan-view";
@@ -29,6 +30,12 @@ const routes = [
     view: (params: Switch.Params) => html`
       <chef-view chef-id=${params.id}></chef-view>
     `
+  },
+  {
+    path: "/app/chef/:id/edit",
+    view: (params: Switch.Params) => html`
+    <chef-edit chef-id=${params.id}></chef-edit>
+  `
   },
   {
     path: "/app/ingredient/:id",
@@ -88,6 +95,7 @@ define({
   "cuisine-view": CuisineViewElement,
   "mealplan-view": MealPlanViewElement,
   "login-form": LoginFormElement,
+  "chef-edit": ChefEditElement,
   "mu-switch": class AppSwitch extends Switch.Element {
     constructor() {
       super(routes, "recipebook:history", "recipebook:auth");

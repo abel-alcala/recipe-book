@@ -24,8 +24,14 @@ export default function update(
                 .then((chef) =>
                     apply((model) => ({...model, chef}))
                 )
+                .then(() => {
+                    const {onSuccess} = message[1];
+                    if (onSuccess) onSuccess();
+                })
                 .catch((error) => {
                     console.error("Failed to save chef:", error);
+                    const {onFailure} = message[1];
+                    if (onFailure) onFailure(error);
                 });
             break;
 
@@ -159,8 +165,13 @@ function saveChef(
         .then((response: Response) => {
             if (response.status === 200) {
                 return response.json();
+            } else if (response.status === 401) {
+                throw new Error("You are not authorized to edit this chef profile");
+            } else if (response.status === 403) {
+                throw new Error("You can only edit your own chef profile");
+            } else {
+                throw new Error(`Failed to save chef: ${response.status}`);
             }
-            throw new Error(`Failed to save chef: ${response.status}`);
         })
         .then((json: unknown) => {
             console.log("Chef saved:", json);

@@ -2,7 +2,11 @@ import {ChefData} from "server/models";
 
 export type Msg =
     | ["chef/load", { chefId: string }]
-    | ["chef/save", { chefId: string; chef: ChefData }]
+    | ["chef/save", {
+        chefId: string;
+        chef: ChefData;
+        onSuccess?: () => void;
+        onFailure?: (err: Error) => void; }]
     | ["chefs/load", {}]
     | ["recipe/load", { recipeId: string }]
     | ["recipes/load", {}]

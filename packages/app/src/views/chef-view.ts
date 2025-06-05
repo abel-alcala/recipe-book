@@ -1,6 +1,6 @@
 import {css, html} from "lit";
 import {property, state} from "lit/decorators.js";
-import {View} from "@calpoly/mustang";
+import {History, View} from "@calpoly/mustang";
 import {globalStyles} from "../styles/globalStyles.css.ts";
 import {Msg} from "../messages";
 import {Model} from "../model";
@@ -46,6 +46,29 @@ export class ChefViewElement extends View<Model, Msg> {
                 min-height: 100vh;
             }
 
+            .chef-profile {
+                position: relative;
+                padding-top: var(--spacing-xl);
+            }
+
+            .edit-button {
+                position: absolute;
+                top: 0;
+                right: 0;
+                padding: var(--spacing-sm) var(--spacing-lg);
+                background: var(--color-primary);
+                color: white;
+                border: none;
+                border-radius: var(--border-radius-sm);
+                cursor: pointer;
+                font-size: 1rem;
+                transition: opacity 0.2s;
+            }
+
+            .edit-button:hover {
+                opacity: 0.9;
+            }
+
             .chef-image {
                 width: 200px;
                 height: 200px;
@@ -89,11 +112,13 @@ export class ChefViewElement extends View<Model, Msg> {
                 padding: var(--spacing-xs);
                 border-radius: var(--border-radius-sm);
                 transition: background-color 0.2s;
+                color: var(--color-link);
+                text-decoration: none;
             }
 
             .section a:hover {
                 background-color: var(--color-background-hover);
-                text-decoration: none;
+                text-decoration: underline;
             }
 
             .loading {
@@ -101,11 +126,22 @@ export class ChefViewElement extends View<Model, Msg> {
                 padding: var(--spacing-xl);
                 color: var(--color-text);
             }
+
+            @media (max-width: 768px) {
+                .chef-profile {
+                    padding-top: var(--spacing-lg);
+                }
+
+                .edit-button {
+                    position: static;
+                    width: 100%;
+                    margin-bottom: var(--spacing-lg);
+                }
+            }
         `
     ];
 
     render() {
-        this.model.chef
         if (!this.chef && this.chefId) {
             return html`
                 <div class="container">
@@ -125,6 +161,14 @@ export class ChefViewElement extends View<Model, Msg> {
         return html`
             <div class="container">
                 <div class="chef-profile">
+                    <button
+                            class="edit-button"
+                            @click=${() => History.dispatch(this, "history/navigate", {
+                                href: `/app/chef/${this.chefId}/edit`
+                            })}>
+                        Edit Profile
+                    </button>
+
                     <div class="chef-image">
                         <img src="${this.chef.imageUrl}" alt="${this.chef.name}">
                     </div>
