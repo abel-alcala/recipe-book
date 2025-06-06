@@ -114,26 +114,6 @@ body {
     margin-bottom: var(--spacing-lg);
 }
 
-.submit-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(158, 206, 106, 0.3);
-}
-
-.submit-button:active:not(:disabled) {
-    transform: translateY(0);
-}
-
-.submit-button:disabled {
-    background: var(--color-text);
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.submit-button.loading {
-    color: transparent;
-}
 
 .submit-button.loading::after {
     content: '';

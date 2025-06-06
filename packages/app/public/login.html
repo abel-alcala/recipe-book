@@ -20,23 +20,6 @@
         });
     </script>
     <style>
-        .brand-logo {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-alt) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto var(--spacing-md);
-            box-shadow: 0 8px 16px rgba(158, 206, 106, 0.3);
-        }
-
-        .brand-logo::before {
-            content: "🍳";
-            font-size: 28px;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-        }
 
         .auth-card .form-container {
             position: relative;
@@ -139,17 +122,6 @@
             animation: slideIn 0.3s ease;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .welcome-text {
             text-align: center;
             margin-bottom: var(--spacing-xl);
@@ -185,17 +157,6 @@
             background: rgba(158, 206, 106, 0.1);
             transform: translateY(-1px);
         }
-
-        @media (max-width: 600px) {
-            .brand-logo {
-                width: 50px;
-                height: 50px;
-            }
-
-            .brand-logo::before {
-                font-size: 24px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -229,6 +190,7 @@
                             required
                     />
                     <label>Password</label>
+                    <button slot="button" type="submit">Login</button>
                 </div>
             </login-form>
 
