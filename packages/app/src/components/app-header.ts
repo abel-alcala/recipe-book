@@ -345,7 +345,7 @@ export class AppHeader extends LitElement {
                             </li>
                             <li class="when-signed-out">
                                 <a @click=${() => {
-                                    window.location.href = '/public/login.html';
+                                    window.location.href = '/login.html';
                                 }}>Sign In</a>
                             </li>
                         </menu>
