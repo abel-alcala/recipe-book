@@ -23,8 +23,6 @@ export class LoginFormElement extends LitElement {
     @state()
     private loading = false;
 
-
-
     get canSubmit(): boolean {
         return Boolean(this.api && this.formData.username &&
             this.formData.password);
