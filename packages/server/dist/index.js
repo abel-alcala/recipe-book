@@ -56,6 +56,7 @@ app.use("/api/ingredients", import_auth.authenticateUser, import_ingredients.def
 app.use("/api/chefs", import_auth.authenticateUser, import_chef_routes.default);
 app.use("/api/cuisines", import_auth.authenticateUser, import_cuisine_routes.default);
 app.use("/api/mealplans", import_mealplan_routes.default);
+app.use("/api/recipes/create", import_auth.authenticateUser, import_recipe_routes.default);
 app.use("/api/recipes", import_recipe_routes.default);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

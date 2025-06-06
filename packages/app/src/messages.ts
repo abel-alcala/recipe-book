@@ -1,4 +1,4 @@
-import {ChefData} from "server/models";
+import {ChefData, RecipeData} from "server/models";
 
 export type Msg =
     | ["chef/load", { chefId: string }]
@@ -9,10 +9,18 @@ export type Msg =
         onFailure?: (err: Error) => void; }]
     | ["chefs/load", {}]
     | ["recipe/load", { recipeId: string }]
+    | ["recipe/create", {
+        recipe: RecipeData;
+        onSuccess?: () => void;
+        onFailure?: (err: Error) => void; }]
     | ["recipes/load", {}]
     | ["cuisine/load", { cuisineId: string }]
     | ["cuisines/load", {}]
     | ["ingredient/load", { ingredientId: string }]
     | ["ingredients/load", {}]
-    | ["mealplan/load", { mealplanId: string }]
+    | ["mealplan/load", {
+        mealplanId: string;
+        onSuccess?: () => void;
+        onFailure?: (err: Error) => void;
+}]
     | ["mealplans/load", {}];

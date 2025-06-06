@@ -276,6 +276,7 @@ export class AppHeader extends LitElement {
             a:has(#userid:not(:empty)) ~ menu > .when-signed-out {
                 display: none;
             }
+            
 
             @media (max-width: 775px) {
                 .header-container {
@@ -312,8 +313,8 @@ export class AppHeader extends LitElement {
                     </a>
                 </div>
                 <div class="main-nav">
-                    <nav>
-                        <a href="/app">Home</a>
+                    <nav class="when-signed-in" >
+                        <a href="/app/recipe/create">Add Recipe</a>
                     </nav>
                     <mu-dropdown>
                         <a slot="actuator" >

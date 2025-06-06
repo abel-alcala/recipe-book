@@ -4,11 +4,14 @@ import {View} from "@calpoly/mustang";
 import {globalStyles} from "../styles/globalStyles.css.ts";
 import {Msg} from "../messages";
 import {Model} from "../model";
-import {MealPlanData, RecipeData} from "server/models";
+import {CuisineData, MealPlanData, RecipeData} from "server/models";
 
 export class HomeViewElement extends View<Model, Msg> {
     @state()
     private viewMode: 'recipes' | 'mealplans' = 'recipes';
+
+    @state()
+    private selectedCuisine: string = '';
 
     @state()
     get recipes(): RecipeData[] {
@@ -20,6 +23,21 @@ export class HomeViewElement extends View<Model, Msg> {
         return this.model.mealplans || [];
     }
 
+    @state()
+    get cuisines(): CuisineData[] {
+        return this.model.cuisines || [];
+    }
+
+    @state()
+    get filteredRecipes(): RecipeData[] {
+        if (!this.selectedCuisine) {
+            return this.recipes;
+        }
+        return this.recipes.filter(recipe =>
+            recipe.cuisine.name === this.selectedCuisine
+        );
+    }
+
     constructor() {
         super("recipebook:model");
     }
@@ -28,6 +46,7 @@ export class HomeViewElement extends View<Model, Msg> {
         super.connectedCallback();
         this.dispatchMessage(["recipes/load", {}]);
         this.dispatchMessage(["mealplans/load", {}]);
+        this.dispatchMessage(["cuisines/load", {}]);
     }
 
     static styles = [
@@ -140,19 +159,113 @@ export class HomeViewElement extends View<Model, Msg> {
                 transform: translateX(50%);
             }
 
-            .content-section {
-                animation: fadeIn 0.5s ease-out;
+            /* Cuisine Filter */
+            .filter-section {
+                margin-bottom: var(--spacing-xl);
+                opacity: 1;
+                transform: translateY(0);
+                transition: all 0.3s ease;
             }
 
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
+            .filter-section.hidden {
+                opacity: 0;
+                transform: translateY(-20px);
+                pointer-events: none;
+                margin-bottom: 0;
+            }
+
+            .filter-header {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                gap: var(--spacing-lg);
+                margin-bottom: var(--spacing-md);
+                padding: 0 var(--spacing-sm);
+            }
+
+            .filter-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--color-text);
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-sm);
+            }
+
+            .filter-icon {
+                width: 20px;
+                height: 20px;
+                fill: var(--color-accent);
+            }
+
+            .cuisine-filter {
+                display: flex;
+                flex-wrap: wrap;
+                gap: var(--spacing-sm);
+                justify-content: center;
+            }
+
+            .cuisine-chip {
+                display: inline-flex;
+                align-items: center;
+                padding: var(--spacing-sm) var(--spacing-md);
+                background: var(--color-background-card);
+                border: 2px solid var(--color-border);
+                border-radius: var(--border-radius-pill);
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-size: 0.9rem;
+                font-weight: 500;
+                user-select: none;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .cuisine-chip::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg,
+                var(--color-accent) 0%,
+                var(--color-accent-alt) 100%);
+                opacity: 0;
+                transition: opacity 0.2s ease;
+            }
+
+            .cuisine-chip span {
+                position: relative;
+                z-index: 1;
+                transition: color 0.2s ease;
+            }
+
+            .cuisine-chip:hover {
+                border-color: var(--color-accent);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(158, 206, 106, 0.2);
+            }
+
+            .cuisine-chip.selected {
+                border-color: var(--color-accent);
+                color: var(--color-text-inverted);
+                box-shadow: 0 4px 12px rgba(158, 206, 106, 0.3);
+            }
+
+            .cuisine-chip.selected::before {
+                opacity: 1;
+            }
+
+            .filter-summary {
+                text-align: center;
+                margin-top: var(--spacing-md);
+                padding: var(--spacing-sm);
+                background: var(--color-background-card);
+                border-radius: var(--border-radius-md);
+                border-left: 4px solid var(--color-accent);
+                font-size: 0.9rem;
+                color: var(--color-text-muted);
             }
 
             .content-grid {
@@ -268,9 +381,9 @@ export class HomeViewElement extends View<Model, Msg> {
             }
 
             .difficulty-easy { background: #10b981; }
-            .difficulty-medium { background: #f59e0b; } 
+            .difficulty-medium { background: #f59e0b; }
             .difficulty-hard { background: #ef4444; }
-            
+
             .loading-container {
                 display: flex;
                 flex-direction: column;
@@ -313,7 +426,7 @@ export class HomeViewElement extends View<Model, Msg> {
                 margin-bottom: var(--spacing-lg);
                 fill: var(--color-border);
             }
-            
+
             @media (max-width: 768px) {
                 .hero-section h1 {
                     font-size: 2rem;
@@ -330,6 +443,16 @@ export class HomeViewElement extends View<Model, Msg> {
                 .item-meta {
                     gap: var(--spacing-md);
                 }
+
+                .cuisine-filter {
+                    justify-content: flex-start;
+                }
+
+                .filter-header {
+                    flex-direction: column;
+                    gap: var(--spacing-sm);
+                    align-items: flex-start;
+                }
             }
         `
     ];
@@ -338,9 +461,65 @@ export class HomeViewElement extends View<Model, Msg> {
         this.viewMode = mode;
     }
 
+    private handleCuisineToggle(cuisineName: string) {
+        if (this.selectedCuisine === cuisineName) {
+            this.selectedCuisine = '';
+        } else {
+            this.selectedCuisine = cuisineName;
+        }
+    }
+
+    private getAvailableCuisines(): string[] {
+        const cuisineNames = new Set(this.recipes.map(recipe => recipe.cuisine.name));
+        return Array.from(cuisineNames).sort();
+    }
+
+    private renderCuisineFilter() {
+        if (this.viewMode !== 'recipes') {
+            return html`<div class="filter-section hidden"></div>`;
+        }
+
+        const availableCuisines = this.getAvailableCuisines();
+        const hasFilter = this.selectedCuisine !== '';
+        const filteredCount = this.filteredRecipes.length;
+        const totalCount = this.recipes.length;
+
+        return html`
+            <div class="filter-section">
+                <div class="filter-header">
+                    <div class="filter-title">
+                        <svg class="filter-icon" viewBox="0 0 24 24">
+                            <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
+                        </svg>
+                        Filter by Cuisine
+                    </div>
+                    ${availableCuisines.map(cuisine => html`
+                        <div
+                                class="cuisine-chip ${this.selectedCuisine === cuisine ? 'selected' : ''}"
+                                @click=${() => this.handleCuisineToggle(cuisine)}
+                        >
+                            <span>${cuisine}</span>
+                        </div>
+                    `)}
+                </div>
+
+                <div class="cuisine-filter">
+                    
+                </div>
+
+                ${hasFilter ? html`
+                    <div class="filter-summary">
+                        Showing ${filteredCount} of ${totalCount} recipes for ${this.selectedCuisine} cuisine
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
     private renderContent() {
-        const items = this.viewMode === 'recipes' ? this.recipes : this.mealPlans;
-        const isLoading = items.length === 0 &&
+        const items = this.viewMode === 'recipes' ? this.filteredRecipes : this.mealPlans;
+        const allItems = this.viewMode === 'recipes' ? this.recipes : this.mealPlans;
+        const isLoading = allItems.length === 0 &&
             (this.viewMode === 'recipes' ? !this.model.recipes : !this.model.mealplans);
 
         if (isLoading) {
@@ -353,13 +532,25 @@ export class HomeViewElement extends View<Model, Msg> {
         }
 
         if (items.length === 0) {
+            const isEmpty = allItems.length === 0;
+
             return html`
                 <div class="empty-state">
                     <svg viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                     </svg>
-                    <h3>No ${this.viewMode === 'recipes' ? 'recipes' : 'meal plans'} found</h3>
-                    <p>Check back later for new content!</p>
+                    <h3>
+                        ${isEmpty
+                                ? `No ${this.viewMode === 'recipes' ? 'recipes' : 'meal plans'} found`
+                                : `No recipes found for ${this.selectedCuisine} cuisine`
+                        }
+                    </h3>
+                    <p>
+                        ${isEmpty
+                                ? 'Check back later for new content!'
+                                : 'Try selecting a different cuisine.'
+                        }
+                    </p>
                 </div>
             `;
         }
@@ -472,6 +663,8 @@ export class HomeViewElement extends View<Model, Msg> {
                         Meal Plans
                     </button>
                 </div>
+
+                ${this.renderCuisineFilter()}
 
                 <div class="content-section">
                     ${this.renderContent()}

@@ -42,7 +42,7 @@ export class ChefEditElement extends View<Model, Msg> {
                         color: white;
                         cursor: pointer;
                         transition: opacity 0.2s, background-color 0.2s, border-color 0.2s, color 0.2s;
-                        padding: var(--spacing-md) var(--spacing-lg); // Increased padding for better click targets
+                        padding: var(--spacing-md) var(--spacing-lg);
                         border-radius: 4px !important;
                         font-size: 1rem;
                         font-weight: 600;
@@ -401,14 +401,6 @@ export class ChefEditElement extends View<Model, Msg> {
                                     name="bio"
                                     required
                             ></textarea>
-
-                            <label for="imageUrl">Profile Image URL</label>
-                            <input
-                                    type="url"
-                                    id="imageUrl"
-                                    name="imageUrl"
-                                    required
-                            />
                         </div>
 
                         <div class="form-section favorite-dishes">
@@ -440,31 +432,6 @@ export class ChefEditElement extends View<Model, Msg> {
                             </div>
                         </div>
                     </div>
-
-
-                    <div class="form-section">
-                        <h2>Your Recipes</h2>
-                        <div id="recipes-container">
-                            ${this.chef.recipes.map((recipe, index) => html`
-                                <div class="list-item">
-                                    <input 
-                                        type="text" 
-                                        name="recipes[${index}].name" 
-                                        value="${recipe.name}"
-                                        readonly
-                                    />
-                                    <input 
-                                        type="hidden" 
-                                        name="recipes[${index}].href" 
-                                        value="${recipe.href}"
-                                    />
-                                </div>
-                            `)}
-                        </div>
-                        <p class="helper-text">
-                            Recipes are managed separately. Create new recipes from the recipes page.
-                        </p>
-                    </div>
                     <button
                             type="button"
                             class="cancel-button"
@@ -473,7 +440,6 @@ export class ChefEditElement extends View<Model, Msg> {
                             })}>
                         Cancel
                     </button>
-
                     <input type="hidden" name="idName" value="${this.chef.idName}" />
                 </mu-form>
             </div>

@@ -55,6 +55,22 @@ export default function update(
                 });
             break;
 
+        case "recipe/create":
+            createRecipe(message[1], user)
+                .then((recipe) =>
+                    apply((model) => ({...model, recipe}))
+                )
+                .then(() => {
+                    const {onSuccess} = message[1];
+                    if (onSuccess) onSuccess();
+                })
+                .catch((error) => {
+                    console.error("Failed to create recipe:", error);
+                    const {onFailure} = message[1];
+                    if (onFailure) onFailure(error);
+                });
+            break;
+
         case "recipes/load":
             loadRecipes()
                 .then((recipes) =>
@@ -105,13 +121,19 @@ export default function update(
                 });
             break;
 
+
         case "mealplan/load":
             loadMealPlan(message[1])
-                .then((mealplan) =>
-                    apply((model) => ({...model, mealplan}))
-                )
+                .then((mealplan) => {
+                    apply((model) => ({...model, mealplan}));
+                    const {onSuccess} = message[1];
+                    if (onSuccess) onSuccess();
+                })
                 .catch((error) => {
                     console.error("Failed to load meal plan:", error);
+                    apply((model) => ({...model, mealplan: undefined}));
+                    const {onFailure} = message[1];
+                    if (onFailure) onFailure(error);
                 });
             break;
 
@@ -214,6 +236,33 @@ function loadRecipe(
         });
 }
 
+function createRecipe(
+    payload: { recipe: RecipeData },
+    user: Auth.User
+): Promise<RecipeData> {
+    return fetch("/api/recipes", {
+        method: "POST",
+        headers: {
+            ...Auth.headers(user),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload.recipe)
+    })
+        .then((response: Response) => {
+            if (response.status === 201) {
+                return response.json();
+            } else if (response.status === 401) {
+                throw new Error("You are not authorized to create recipes");
+            } else {
+                throw new Error(`Failed to create recipe: ${response.status}`);
+            }
+        })
+        .then((json: unknown) => {
+            console.log("Recipe created:", json);
+            return json as RecipeData;
+        });
+}
+
 function loadRecipes(): Promise<RecipeData[]> {
     return fetch("/api/recipes")
         .then((response: Response) => {
@@ -305,12 +354,36 @@ function loadMealPlan(
         .then((response: Response) => {
             if (response.status === 200) {
                 return response.json();
+            } else if (response.status === 404) {
+                throw new Error(`Meal plan "${payload.mealplanId}" not found`);
+            } else if (response.status >= 500) {
+                throw new Error("Server error while loading meal plan. Please try again later.");
+            } else {
+                throw new Error(`Failed to load meal plan: ${response.status}`);
             }
-            throw new Error(`Failed to load meal plan: ${response.status}`);
         })
         .then((json: unknown) => {
             console.log("Meal plan loaded:", json);
-            return json as MealPlanData;
+            const mealplan = json as MealPlanData;
+            if (!mealplan.name || !mealplan.idName) {
+                throw new Error("Invalid meal plan data received from server");
+            }
+            if (!mealplan.recipes) {
+                mealplan.recipes = [];
+            }
+            mealplan.recipes = mealplan.recipes.map(recipe => ({
+                ...recipe,
+                href: recipe.href || '#',
+                name: recipe.name || 'Untitled Recipe'
+            }));
+
+            return mealplan;
+        })
+        .catch((error) => {
+            if (error instanceof TypeError && error.message.includes('fetch')) {
+                throw new Error("Network error: Unable to connect to server");
+            }
+            throw error;
         });
 }
 

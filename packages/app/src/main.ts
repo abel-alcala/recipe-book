@@ -6,12 +6,14 @@ import update from "./update";
 import { AppHeader } from "./components/app-header";
 import { HomeViewElement } from "./views/home-view";
 import { RecipeViewElement } from "./views/recipe-view";
+import { RecipeCreateElement } from "./components/recipe-create";
 import { ChefViewElement } from "./views/chef-view";
 import { ChefEditElement} from "./components/profile-edit";
 import { IngredientViewElement } from "./views/ingredient-view";
 import { CuisineViewElement } from "./views/cuisine-view";
 import { MealPlanViewElement } from "./views/mealplan-view";
 import { LoginFormElement } from "./components/login-form";
+export { RecipeCreateElement } from "./components/recipe-create";
 import tokenStyles from "./styles/tokens.css";
 
 const style = document.createElement('style');
@@ -19,6 +21,12 @@ style.textContent = tokenStyles.cssText;
 document.head.append(style);
 
 const routes = [
+  {
+    path: "/app/recipe/create",
+    view: () => html`
+      <recipe-create></recipe-create>
+    `
+  },
   {
     path: "/app/recipe/:id",
     view: (params: Switch.Params) => html`
@@ -34,8 +42,8 @@ const routes = [
   {
     path: "/app/chef/:id/edit",
     view: (params: Switch.Params) => html`
-    <chef-edit chef-id=${params.id}></chef-edit>
-  `
+      <chef-edit chef-id=${params.id}></chef-edit>
+    `
   },
   {
     path: "/app/ingredient/:id",
@@ -90,6 +98,7 @@ define({
   "app-header": AppHeader,
   "home-view": HomeViewElement,
   "recipe-view": RecipeViewElement,
+  "recipe-create": RecipeCreateElement,
   "chef-view": ChefViewElement,
   "ingredient-view": IngredientViewElement,
   "cuisine-view": CuisineViewElement,
