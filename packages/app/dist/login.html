@@ -10,17 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-    <script type="module">
-        import {Auth, define} from "@calpoly/mustang";
-        import {LoginFormElement} from "/src/components/login-form";
-
-        define({
-            "mu-auth": Auth.Provider,
-            "login-form": LoginFormElement
-        });
-    </script>
     <style>
-
         .auth-card .form-container {
             position: relative;
         }
@@ -158,18 +148,20 @@
             transform: translateY(-1px);
         }
     </style>
+  <script type="module" crossorigin src="/assets/login-CLE2ItYd.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/login-form-DKjEykCR.js">
 </head>
 <body>
 <mu-auth provides="recipebook:auth">
     <div class="auth-container">
         <div class="auth-header">
-            <div class="brand-logo"></div>
             <h1>Welcome Back</h1>
             <p class="welcome-text">Sign in to access your recipe collection</p>
         </div>
 
         <div class="auth-card">
-            <login-form api="/auth/login" class="form-container">
+            <login-form api="/auth/login" redirect="/app" class="form-container">
                 <div class="input-group">
                     <input
                             autocomplete="username"
@@ -190,7 +182,6 @@
                             required
                     />
                     <label>Password</label>
-                    <button slot="button" type="submit">Login</button>
                 </div>
             </login-form>
 
@@ -199,7 +190,7 @@
             <div class="auth-footer">
                 <p>
                     New to RecipeBook?
-                    <a href="/register.html">Create your account</a>
+                    <a href="register.html">Create your account</a>
                 </p>
             </div>
         </div>

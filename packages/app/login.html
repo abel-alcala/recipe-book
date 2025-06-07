@@ -20,7 +20,6 @@
         });
     </script>
     <style>
-
         .auth-card .form-container {
             position: relative;
         }
@@ -163,13 +162,12 @@
 <mu-auth provides="recipebook:auth">
     <div class="auth-container">
         <div class="auth-header">
-            <div class="brand-logo"></div>
             <h1>Welcome Back</h1>
             <p class="welcome-text">Sign in to access your recipe collection</p>
         </div>
 
         <div class="auth-card">
-            <login-form api="/auth/login" class="form-container">
+            <login-form api="/auth/login" redirect="/app" class="form-container">
                 <div class="input-group">
                     <input
                             autocomplete="username"
@@ -190,7 +188,6 @@
                             required
                     />
                     <label>Password</label>
-                    <button slot="button" type="submit">Login</button>
                 </div>
             </login-form>
 
@@ -199,7 +196,7 @@
             <div class="auth-footer">
                 <p>
                     New to RecipeBook?
-                    <a href="/register.html">Create your account</a>
+                    <a href="register.html">Create your account</a>
                 </p>
             </div>
         </div>
