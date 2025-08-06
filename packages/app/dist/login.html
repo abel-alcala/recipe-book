@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - RecipeBook</title>
+    <link rel="stylesheet" href="/styles/tokens.css">
+    <link rel="stylesheet" href="/styles/reset.css">
+    <link rel="stylesheet" href="/styles/auth.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .auth-card .form-container {
+            position: relative;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .input-group label {
+            position: absolute;
+            top: var(--spacing-md);
+            left: var(--spacing-md);
+            color: var(--color-text);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: var(--spacing-lg) var(--spacing-md) var(--spacing-sm);
+            font-size: 1rem;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius-md);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--color-text);
+            transition: all 0.3s ease;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus,
+        .input-group input:not(:placeholder-shown) {
+            outline: none;
+            border-color: var(--color-accent);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(158, 206, 106, 0.1);
+        }
+
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            top: var(--spacing-xs);
+            font-size: 0.75rem;
+            color: var(--color-accent);
+            opacity: 1;
+            font-weight: 600;
+        }
+
+        .input-group input::placeholder {
+            color: transparent;
+        }
+
+        login-form button[type="submit"] {
+            width: 100%;
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-alt) 100%);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: var(--spacing-lg);
+            min-height: 48px;
+        }
+
+        login-form button[type="submit"]:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(158, 206, 106, 0.3);
+        }
+
+        login-form button[type="submit"]:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        login-form button[type="submit"]:disabled {
+            background: var(--color-text);
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        login-form .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            font-size: 0.9rem;
+            margin-top: var(--spacing-sm);
+            animation: slideIn 0.3s ease;
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            color: var(--color-text);
+            opacity: 0.9;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: var(--spacing-xl);
+        }
+
+        .auth-footer a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius-sm);
+        }
+
+        .auth-footer a:hover {
+            color: var(--color-accent-alt);
+            background: rgba(158, 206, 106, 0.1);
+            transform: translateY(-1px);
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/login-CLE2ItYd.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/login-form-DKjEykCR.js">
+</head>
+<body>
+<mu-auth provides="recipebook:auth">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>Welcome Back</h1>
+            <p class="welcome-text">Sign in to access your recipe collection</p>
+        </div>
+
+        <div class="auth-card">
+            <login-form api="/auth/login" redirect="/app" class="form-container">
+                <div class="input-group">
+                    <input
+                            autocomplete="username"
+                            name="username"
+                            type="text"
+                            placeholder="Username"
+                            required
+                    />
+                    <label>Username</label>
+                </div>
+
+                <div class="input-group">
+                    <input
+                            name="password"
+                            type="password"
+                            placeholder="Password"
+                            autocomplete="current-password"
+                            required
+                    />
+                    <label>Password</label>
+                </div>
+            </login-form>
+
+            <div class="divider"></div>
+
+            <div class="auth-footer">
+                <p>
+                    New to RecipeBook?
+                    <a href="register.html">Create your account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</mu-auth>
+</body>
+</html>
