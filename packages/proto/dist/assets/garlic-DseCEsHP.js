@@ -1,1 +1,0 @@
-import{d as i,a as r}from"./state-BwZx0JEs.js";import{H as e}from"./header-DZd1mZyI.js";import{I as a}from"./IngredientCardJson-D9nkJSm9.js";i({"blz-header":e,"mu-auth":r.Provider,"ingredient-info":a});e.initializeOnce();
