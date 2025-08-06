@@ -12,13 +12,9 @@
     }
   },
   "scripts": {
+    "start": "node dist/index.js",
+    "build": "npx etsc",
     "dev": "nodemon",
-    "build": "npx tsc",
-    "start": "npm run build && npm run start:node",
-    "start:api": "cross-env STATIC=./public npm run start",
-    "start:app": "cross-env STATIC=../app/dist npm run start",
-    "start:node": "node dist/index.js",
-    "start:proto": "cross-env STATIC=../proto/dist npm run start",
     "check": "tsc --noEmit",
     "seed": "ts-node ./src/script/data-seeder.ts"
   },
@@ -36,9 +32,9 @@
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.18",
-    "esbuild-node-tsc": "^2.0.5",
     "cross-env": "^7.0.3",
     "esbuild": "^0.25.4",
+    "esbuild-node-tsc": "^2.0.5",
     "nodemon": "^3.1.10",
     "typescript": "^5.8.3"
   }
