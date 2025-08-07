@@ -2,6 +2,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "routes": [
     {
       "src": "/login",
@@ -12,7 +14,7 @@
       "dest": "/register.html"
     },
     {
-      "src": "/(.*)",
+      "src": "/((?!.*\\.(js|css|png|jpg|jpeg|svg|webp|woff|woff2|ttf|eot|ico|json)$).*)",
       "dest": "/index.html"
     }
   ]
