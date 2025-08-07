@@ -116,7 +116,7 @@
                 const _ = await response.json();
                 showSuccess('Account created successfully! Redirecting...');
                 setTimeout(() => {
-                    window.location.href = '/login.html';
+                    window.location.href = '/login';
                 }, 1500);
             } else {
                 let errorMsg = 'Registration failed. Please try again.';
