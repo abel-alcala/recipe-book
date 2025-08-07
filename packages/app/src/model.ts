@@ -1,4 +1,4 @@
-import {ChefData, CuisineData, IngredientData, MealPlanData, RecipeData} from "server/models";
+import {ChefData, CuisineData, IngredientData, MealPlanData, RecipeData} from "./types/models.ts";
 
 export interface Model {
     chef?: ChefData;

@@ -1,4 +1,4 @@
-import {ChefData, RecipeData} from "server/models";
+import {ChefData, RecipeData} from "./types/models.ts";
 
 export type Msg =
     | ["chef/load", { chefId: string }]

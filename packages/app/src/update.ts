@@ -1,7 +1,7 @@
 import {Auth, Update} from "@calpoly/mustang";
 import {Msg} from "./messages";
 import {Model} from "./model";
-import {ChefData, CuisineData, IngredientData, MealPlanData, RecipeData} from "server/models";
+import {ChefData, CuisineData, IngredientData, MealPlanData, RecipeData} from "./types/models.ts";
 
 export default function update(
     message: Msg,

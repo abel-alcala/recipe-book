@@ -4,7 +4,7 @@ import {View} from "@calpoly/mustang";
 import {globalStyles} from "../styles/globalStyles.css.ts";
 import {Msg} from "../messages";
 import {Model} from "../model";
-import {CuisineData, MealPlanData, RecipeData} from "server/models";
+import {CuisineData, MealPlanData, RecipeData} from "../types/models.ts";
 
 export class HomeViewElement extends View<Model, Msg> {
     @state()

@@ -4,7 +4,7 @@ import {View} from "@calpoly/mustang";
 import {globalStyles} from "../styles/globalStyles.css.ts";
 import {Msg} from "../messages";
 import {Model} from "../model";
-import {IngredientData} from "server/models";
+import {IngredientData} from "../types/models.ts";
 
 export class IngredientViewElement extends View<Model, Msg> {
     @property({attribute: "ingredient-id"})

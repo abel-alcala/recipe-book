@@ -4,7 +4,7 @@ import { View, Form, define, History, Auth, Observer } from "@calpoly/mustang";
 import { globalStyles } from "../styles/globalStyles.css";
 import { Msg } from "../messages";
 import { Model } from "../model";
-import { ChefData, CuisineData, IngredientData, MealPlanData, RecipeData } from "server/models";
+import { ChefData, CuisineData, IngredientData, MealPlanData, RecipeData } from "../types/models.ts";
 
 export class RecipeCreateElement extends View<Model, Msg> {
     static uses = define({

@@ -4,7 +4,7 @@ import { View, Form, define, History } from "@calpoly/mustang";
 import { globalStyles } from "../styles/globalStyles.css.ts";
 import { Msg } from "../messages";
 import { Model } from "../model";
-import { ChefData } from "server/models";
+import { ChefData } from "../types/models.ts";
 
 export class ChefEditElement extends View<Model, Msg> {
     static uses = define({
