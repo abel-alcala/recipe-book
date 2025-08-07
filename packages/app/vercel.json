@@ -4,6 +4,14 @@
   "installCommand": "npm install",
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "https://recipe-book-t01m.onrender.com/api/$1"
+    },
+    {
+      "src": "/auth/(.*)",
+      "dest": "https://recipe-book-t01m.onrender.com/auth/$1"
+    },
+    {
       "src": "/login",
       "dest": "/login.html"
     },
