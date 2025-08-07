@@ -13,11 +13,11 @@
     },
     {
       "src": "/login",
-      "dest": "/login.html"
+      "dest": "/login"
     },
     {
       "src": "/register",
-      "dest": "/register.html"
+      "dest": "/register"
     },
     {
       "src": "/((?!.*\\.(js|css|png|jpg|jpeg|svg|webp|woff|woff2|ttf|eot|ico|json)$).*)",
