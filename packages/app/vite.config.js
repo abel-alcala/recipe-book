@@ -14,10 +14,10 @@ export default defineConfig({
 
     server: {
         proxy: {
-            "/api": process.env.VITE_API_URL,
-            "/auth": process.env.VITE_API_URL,
-            "/login": process.env.VITE_API_URL,
-            "/register": process.env.VITE_API_URL
+            "/api": "https://recipe-book-t01m.onrender.com",
+            "/auth": "https://recipe-book-t01m.onrender.com/hello",
+            "/login": "https://recipe-book-t01m.onrender.com/hello",
+            "/register": "https://recipe-book-t01m.onrender.com/hello"
         }
     },
 })
