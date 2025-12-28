@@ -14,10 +14,8 @@ export default defineConfig({
 
     server: {
         proxy: {
-            "/api": "https://recipe-book-t01m.onrender.com",
-            "/auth": "https://recipe-book-t01m.onrender.com",
-            "/login": "http://localhost:3000",
-            "/register": "http://localhost:3000"
+            "/api": "http://localhost:3000",
+            "/auth": "http://localhost:3000"
         }
     }
 })

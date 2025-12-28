@@ -74,38 +74,6 @@ export class IngredientViewElement extends View<Model, Msg> {
                 padding-left: var(--spacing-lg);
             }
 
-            .nutrition-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                gap: var(--spacing-md);
-                margin-top: var(--spacing-md);
-            }
-
-            .nutrition-item {
-                text-align: center;
-                padding: var(--spacing-md);
-                background: var(--color-background-card);
-                border-radius: var(--border-radius-sm);
-            }
-
-            .nutrition-value {
-                font-size: 1.5rem;
-                font-weight: bold;
-                color: var(--color-primary);
-                margin-bottom: var(--spacing-xs);
-            }
-
-            .nutrition-label {
-                font-size: 0.9rem;
-                color: var(--color-text-muted);
-            }
-
-            ul {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
-
             li {
                 margin-bottom: var(--spacing-sm);
             }
@@ -120,12 +88,6 @@ export class IngredientViewElement extends View<Model, Msg> {
             .section a:hover {
                 background-color: var(--color-background-hover);
                 text-decoration: none;
-            }
-
-            .loading {
-                text-align: center;
-                padding: var(--spacing-xl);
-                color: var(--color-text);
             }
         `
     ];

@@ -71,13 +71,6 @@ export class MealPlanViewElement extends View<Model, Msg> {
         css`
             :host {
                 min-height: 100vh;
-                display: block;
-            }
-
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: var(--spacing-lg);
             }
 
             .mealplan-header {
@@ -92,22 +85,6 @@ export class MealPlanViewElement extends View<Model, Msg> {
                 margin: 0 0 var(--spacing-md) 0;
                 color: var(--color-primary);
                 font-size: 2rem;
-            }
-
-            .meta-info {
-                display: flex;
-                gap: var(--spacing-lg);
-                flex-wrap: wrap;
-                margin-bottom: var(--spacing-md);
-            }
-
-            .meta-item {
-                font-size: 0.95rem;
-                color: var(--color-text-muted);
-            }
-
-            .meta-item strong {
-                color: var(--color-text);
             }
 
             .purpose {
@@ -213,17 +190,7 @@ export class MealPlanViewElement extends View<Model, Msg> {
                 margin-top: var(--spacing-md);
             }
 
-            .meal-type-tag {
-                background: var(--color-accent);
-                color: var(--color-text-inverted);
-                padding: var(--spacing-xs) var(--spacing-sm);
-                border-radius: var(--border-radius-sm);
-                font-size: 0.9rem;
-                font-weight: 500;
-                text-transform: capitalize;
-            }
-
-            .loading, .error, .not-found {
+            .error, .not-found {
                 text-align: center;
                 padding: var(--spacing-xl);
                 color: var(--color-text);

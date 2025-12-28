@@ -24,7 +24,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
         servingSize: "",
         difficulty: "Easy",
         cuisineId: "",
-        ingredientIds: [] as string[],
+        ingredients: [{ name: "", quantity: "", unit: "cups" }] as Array<{ name: string; quantity: string; unit: string }>,
         mealPlanIds: [] as string[],
         steps: [""]
     };
@@ -46,10 +46,6 @@ export class RecipeCreateElement extends View<Model, Msg> {
 
     get cuisines(): CuisineData[] {
         return this.model.cuisines || [];
-    }
-
-    get ingredients(): IngredientData[] {
-        return this.model.ingredients || [];
     }
 
     get mealplans(): MealPlanData[] {
@@ -100,7 +96,6 @@ export class RecipeCreateElement extends View<Model, Msg> {
         });
 
         this.dispatchMessage(["cuisines/load", {}]);
-        this.dispatchMessage(["ingredients/load", {}]);
         this.dispatchMessage(["mealplans/load", {}]);
 
         // Load chef if userId is already set (fallback)
@@ -122,7 +117,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
         this.formData = { ...this.formData, [field]: value };
     }
 
-    private handleMultiSelectChange(field: 'ingredientIds' | 'mealPlanIds', value: string, checked: boolean) {
+    private handleMultiSelectChange(field: 'mealPlanIds', value: string, checked: boolean) {
         const currentValues = [...this.formData[field]];
         if (checked && !currentValues.includes(value)) {
             currentValues.push(value);
@@ -131,6 +126,25 @@ export class RecipeCreateElement extends View<Model, Msg> {
             if (index > -1) currentValues.splice(index, 1);
         }
         this.formData = { ...this.formData, [field]: currentValues };
+    }
+
+    private addIngredient() {
+        this.formData = {
+            ...this.formData,
+            ingredients: [...this.formData.ingredients, { name: "", quantity: "", unit: "cups" }]
+        };
+    }
+
+    private removeIngredient(index: number) {
+        const ingredients = [...this.formData.ingredients];
+        ingredients.splice(index, 1);
+        this.formData = { ...this.formData, ingredients };
+    }
+
+    private handleIngredientChange(index: number, field: 'name' | 'quantity' | 'unit', value: string) {
+        const ingredients = [...this.formData.ingredients];
+        ingredients[index] = { ...ingredients[index], [field]: value };
+        this.formData = { ...this.formData, ingredients };
     }
 
     private addStep() {
@@ -164,7 +178,10 @@ export class RecipeCreateElement extends View<Model, Msg> {
         if (!this.userId) errors.push("User ID is required - please ensure you're logged in");
         if (!this.chef) errors.push("Chef profile not found - please ensure you're logged in");
         if (!this.formData.cuisineId) errors.push("Cuisine selection is required");
-        if (this.formData.ingredientIds.length === 0) errors.push("At least one ingredient is required");
+        if (this.formData.ingredients.length === 0) errors.push("At least one ingredient is required");
+        if (this.formData.ingredients.some(ing => !ing.name.trim() || !ing.quantity.trim())) {
+            errors.push("All ingredients must have a name and quantity");
+        }
         if (this.formData.steps.some(step => !step.trim())) errors.push("All steps must be filled out");
 
         this.errors = errors;
@@ -181,9 +198,6 @@ export class RecipeCreateElement extends View<Model, Msg> {
 
         const idName = this.generateIdName(this.formData.name);
         const selectedCuisine = this.cuisines.find(cuisine => cuisine.idName === this.formData.cuisineId);
-        const selectedIngredients = this.ingredients.filter(ingredient =>
-            this.formData.ingredientIds.includes(ingredient.idName)
-        );
         const selectedMealPlans = this.mealplans.filter(mealplan =>
             this.formData.mealPlanIds.includes(mealplan.idName)
         );
@@ -204,9 +218,10 @@ export class RecipeCreateElement extends View<Model, Msg> {
                 name: selectedCuisine?.name || "",
                 href: `/app/cuisine/${this.formData.cuisineId}`
             },
-            ingredients: selectedIngredients.map(ingredient => ({
+            ingredients: this.formData.ingredients.map(ingredient => ({
                 name: ingredient.name,
-                href: `/app/ingredient/${ingredient.idName}`
+                quantity: ingredient.quantity,
+                unit: ingredient.unit
             })),
             mealPlans: selectedMealPlans.map(mealplan => ({
                 name: mealplan.name,
@@ -281,73 +296,102 @@ export class RecipeCreateElement extends View<Model, Msg> {
             }
 
             .container {
-                max-width: 900px;
+                max-width: 1200px;
                 margin: 0 auto;
-                padding-bottom: var(--spacing-xl);
+                padding: 0 var(--spacing-lg) var(--spacing-xl);
             }
 
             .page-header {
-                margin-bottom: var(--spacing-xl);
-                padding-bottom: var(--spacing-md);
-                border-bottom: 1px solid var(--color-border);
+                margin-bottom: var(--spacing-xl, 3rem);
+                text-align: center;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
             }
 
             .page-header h1 {
                 margin: 0;
-                font-size: 2rem;
+                font-size: 2.5rem;
                 color: var(--color-text);
+                background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                font-weight: 700;
             }
 
             .chef-info {
-                background: var(--color-background-card);
-                border: 1px solid var(--color-border);
-                border-radius: var(--border-radius-md);
-                padding: var(--spacing-lg);
-                margin-bottom: var(--spacing-xl);
                 display: flex;
-                align-items: center;
-                gap: var(--spacing-md);
+                gap: var(--spacing-lg);
+            }
+            
+            .chef-details {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
             }
 
             .chef-info img {
-                width: 60px;
-                height: 60px;
+                width: 80px;
+                height: 80px;
                 border-radius: 50%;
                 object-fit: cover;
+                border: 3px solid var(--color-accent);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
             }
 
             .chef-info h3 {
                 margin: 0;
                 color: var(--color-primary);
-                font-size: 1.2rem;
+                font-size: 1.5rem;
+                font-weight: 600;
             }
 
             .chef-info p {
-                margin: var(--spacing-xs) 0 0 0;
+                margin: var(--spacing-sm) 0 0 0;
                 color: var(--color-text-secondary);
-                font-size: 0.9rem;
+                font-size: 1rem;
+            }
+
+            .recipe-form {
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-xxl, 3rem);
             }
 
             .form-section {
-                margin-bottom: var(--spacing-xl);
-                padding: var(--spacing-lg);
                 background: var(--color-background-card);
-                border-radius: var(--border-radius-md);
+                border-radius: 8px;
                 border: 1px solid var(--color-border);
+                padding: var(--spacing-xl);
             }
 
             .form-section h2 {
-                margin-top: 0;
-                font-size: 1.4rem;
+                font-size: 1.5rem;
                 color: var(--color-primary);
-                padding-bottom: var(--spacing-sm);
-                border-bottom: 1px solid var(--color-border);
+                font-weight: 600;
+            }
+
+            .form-section h3 {
+                margin: var(--spacing-md) 0 var(--spacing-md) 0;
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: var(--color-text);
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: var(--spacing-xxl, 3rem);
             }
 
             .form-row {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                display: flex;
                 gap: var(--spacing-lg);
+            }
+
+            .form-row > * {
+                flex: 1;
             }
 
             label {
@@ -361,23 +405,117 @@ export class RecipeCreateElement extends View<Model, Msg> {
             input, textarea, select {
                 width: 100%;
                 padding: var(--spacing-md);
-                border: 1px solid var(--color-border);
-                border-radius: var(--border-radius-sm);
+                border: 2px solid var(--color-border);
+                border-radius: var(--border-radius-md, 8px);
                 background: var(--color-background-page);
                 color: var(--color-text);
                 font-family: var(--font-body);
                 font-size: 1rem;
-                margin-bottom: var(--spacing-lg);
+                margin-bottom: var(--spacing-md);
+                transition: border-color 0.2s, box-shadow 0.2s;
             }
 
             input:focus, textarea:focus, select:focus {
                 outline: none;
                 border-color: var(--color-primary);
+                box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
             }
 
             textarea {
                 min-height: 120px;
                 resize: vertical;
+                line-height: 1.5;
+            }
+
+            .section-description {
+                color: var(--color-text-secondary);
+                font-size: 0.9rem;
+                margin: var(--spacing-sm) 0 var(--spacing-md) 0;
+            }
+
+            .ingredient-container {
+                margin-bottom: var(--spacing-md);
+            }
+
+            .ingredient-row {
+                display: grid;
+                grid-template-columns: 2.5fr 1fr 1.5fr auto;
+                gap: var(--spacing-lg);
+                align-items: end;
+                padding: var(--spacing-lg);
+                background: var(--color-background-page);
+                border: 2px solid var(--color-border);
+                border-radius: var(--border-radius-md, 8px);
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+
+            .ingredient-row:hover {
+                border-color: var(--color-primary);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+
+            .ingredient-field {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .ingredient-field label {
+                margin-bottom: var(--spacing-xs);
+                font-size: 0.85rem;
+            }
+
+            .ingredient-field input,
+            .ingredient-field select {
+                margin-bottom: 0;
+            }
+
+            .ingredient-field-small {
+                min-width: 100px;
+            }
+
+            .remove-ingredient {
+                background: #dc3545;
+                color: white;
+                border: none;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                font-size: 1.5rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+                transition: background-color 0.2s;
+                padding: 0;
+                margin-bottom: 0;
+            }
+
+            .remove-ingredient:hover {
+                background: #c82333;
+            }
+
+            .add-ingredient {
+                background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+                color: white;
+                border: none;
+                padding: var(--spacing-md) var(--spacing-xl);
+                border-radius: var(--border-radius-md, 8px);
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+                margin-top: var(--spacing-md);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .add-ingredient:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .add-ingredient:active {
+                transform: translateY(0);
             }
 
             .checkbox-grid {
@@ -409,59 +547,103 @@ export class RecipeCreateElement extends View<Model, Msg> {
 
             .step-container {
                 position: relative;
-                margin-bottom: var(--spacing-md);
-                padding: var(--spacing-md);
-                border: 1px solid var(--color-border);
-                border-radius: var(--border-radius-sm);
+                margin-bottom: var(--spacing-lg);
+                padding: var(--spacing-lg);
+                border: 2px solid var(--color-border);
+                border-radius: var(--border-radius-md, 8px);
                 background: var(--color-background-page);
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+
+            .step-container:hover {
+                border-color: var(--color-primary);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             }
 
             .step-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: var(--spacing-sm);
+                margin-bottom: var(--spacing-md);
             }
 
             .step-header h3 {
                 margin: 0;
                 color: var(--color-primary);
-                font-size: 1.1rem;
+                font-size: 1.2rem;
+                font-weight: 600;
             }
 
             .remove-step {
                 background: #dc3545;
                 color: white;
                 border: none;
-                padding: var(--spacing-xs) var(--spacing-sm);
+                padding: var(--spacing-sm) var(--spacing-md);
                 border-radius: var(--border-radius-sm);
-                font-size: 0.8rem;
+                font-size: 0.9rem;
+                font-weight: 600;
                 cursor: pointer;
+                transition: background-color 0.2s, transform 0.2s;
+            }
+
+            .remove-step:hover {
+                background: #c82333;
+                transform: translateY(-1px);
             }
 
             .add-step {
-                background: var(--color-primary);
+                background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+                color: white;
+                border: none;
+                padding: var(--spacing-md) var(--spacing-xl);
+                border-radius: var(--border-radius-md, 8px);
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
                 margin-bottom: var(--spacing-lg);
                 width: fit-content;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .add-step:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .add-step:active {
+                transform: translateY(0);
             }
 
             .form-actions {
                 display: flex;
-                gap: var(--spacing-md);
-                justify-content: flex-end;
-                padding-top: var(--spacing-lg);
-                border-top: 1px solid var(--color-border);
+                gap: var(--spacing-lg);
+                justify-content: center;
+                padding-top: var(--spacing-xl, 3rem);
+                border-top: 2px solid var(--color-border);
+            }
+
+            .form-actions button {
+                padding: var(--spacing-md) var(--spacing-xxl, 3rem);
+                border-radius: var(--border-radius-md, 8px);
+                font-size: 1.1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+                min-width: 150px;
             }
 
             .cancel-button {
-                padding: var(--spacing-md) var(--spacing-lg);
-                border: 2px outset buttonborder;
-                border-radius: 0;
-                font-size: 1rem;
-                font-weight: 600;
-                cursor: pointer;
+                border: 2px solid var(--color-border);
                 background: var(--color-background-page);
                 color: var(--color-text-secondary);
+            }
+
+            .cancel-button:hover {
+                background: var(--color-background-hover);
+                border-color: var(--color-text-secondary);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             }
 
             .error-message {
@@ -484,9 +666,23 @@ export class RecipeCreateElement extends View<Model, Msg> {
                 color: var(--color-text-secondary);
             }
 
-            @media (max-width: 768px) {
-                .form-row {
+            @media (max-width: 900px) {
+                .form-grid {
                     grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .container {
+                    padding: 0 var(--spacing-md) var(--spacing-lg);
+                }
+
+                .page-header h1 {
+                    font-size: 2rem;
+                }
+
+                .form-row {
+                    flex-direction: column;
                 }
 
                 .checkbox-grid {
@@ -496,6 +692,30 @@ export class RecipeCreateElement extends View<Model, Msg> {
                 .chef-info {
                     flex-direction: column;
                     text-align: center;
+                    padding: var(--spacing-lg);
+                }
+
+                .ingredient-row {
+                    grid-template-columns: 1fr;
+                    gap: var(--spacing-md);
+                    padding: var(--spacing-md);
+                }
+
+                .remove-ingredient {
+                    justify-self: flex-end;
+                }
+
+                .form-section {
+                    padding: var(--spacing-lg);
+                }
+
+                .form-actions {
+                    flex-direction: column;
+                    gap: var(--spacing-md);
+                }
+
+                .form-actions button {
+                    width: 100%;
                 }
             }
         `
@@ -513,7 +733,6 @@ export class RecipeCreateElement extends View<Model, Msg> {
             `;
         }
 
-        // Show error if no chef found
         if (!this.chef) {
             return html`
                 <div class="container">
@@ -528,15 +747,16 @@ export class RecipeCreateElement extends View<Model, Msg> {
             <div class="container">
                 <div class="page-header">
                     <h1>Create New Recipe</h1>
-                </div>
-
-                <div class="chef-info">
-                    <img src="${this.chef.imageUrl}" alt="${this.chef.name}" />
-                    <div>
-                        <h3>Creating as: ${this.chef.name}</h3>
-                        <p>This recipe will be attributed to your chef profile</p>
+                    <div class="chef-info">
+                        <div class="chef-details">
+                            <h3>Author: ${this.chef.name}</h3>
+                            <p>This recipe will be added to your chef profile</p>
+                        </div>
+                        <img src="${this.chef.imageUrl}" alt="${this.chef.name}" />
                     </div>
                 </div>
+
+                
 
                 ${this.errors.length > 0 ? html`
                     <div class="error-message">
@@ -545,11 +765,11 @@ export class RecipeCreateElement extends View<Model, Msg> {
                 ` : ''}
 
                 <div class="recipe-form">
-                    <div class="form-section">
-                        <h2>Basic Information</h2>
+                    <div class="form-section full-width">
+                        <h2>Recipe Information</h2>
 
                         <label>
-                            Recipe Name *
+                            Recipe Name
                             <input
                                     type="text"
                                     .value=${this.formData.name}
@@ -560,7 +780,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
                         </label>
 
                         <label>
-                            Description *
+                            Description
                             <textarea
                                     .value=${this.formData.description}
                                     @input=${(e: Event) => this.handleInputChange('description', (e.target as HTMLTextAreaElement).value)}
@@ -572,7 +792,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
 
                         <div class="form-row">
                             <label>
-                                Cooking Time *
+                                Cooking Time
                                 <input
                                         type="text"
                                         placeholder="e.g., 30 minutes"
@@ -583,7 +803,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
                             </label>
 
                             <label>
-                                Serving Size *
+                                Serving Size
                                 <input
                                         type="text"
                                         placeholder="e.g., 4 servings"
@@ -594,7 +814,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
                             </label>
 
                             <label>
-                                Difficulty *
+                                Difficulty
                                 <select
                                         .value=${this.formData.difficulty}
                                         @change=${(e: Event) => this.handleInputChange('difficulty', (e.target as HTMLSelectElement).value)}
@@ -607,58 +827,103 @@ export class RecipeCreateElement extends View<Model, Msg> {
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <h2>Category</h2>
+                    <div class="form-grid">
+                        <div class="form-section">
+                            <h2>Ingredients</h2>
+                            <p class="section-description">Add ingredients with their quantities per serving</p>
+                        ${this.formData.ingredients.map((ingredient, index) => html`
+                            <div class="ingredient-container">
+                                <div class="ingredient-row">
+                                    <div class="ingredient-field">
+                                        <label>Ingredient Name</label>
+                                        <input
+                                            type="text"
+                                            .value=${ingredient.name}
+                                            @input=${(e: Event) => this.handleIngredientChange(index, 'name', (e.target as HTMLInputElement).value)}
+                                            placeholder="e.g., All-purpose flour"
+                                            required
+                                        />
+                                    </div>
+                                    <div class="ingredient-field ingredient-field-small">
+                                        <label>Quantity</label>
+                                        <input
+                                            type="text"
+                                            .value=${ingredient.quantity}
+                                            @input=${(e: Event) => this.handleIngredientChange(index, 'quantity', (e.target as HTMLInputElement).value)}
+                                            placeholder="e.g., 2"
+                                            required
+                                        />
+                                    </div>
+                                    <div class="ingredient-field ingredient-field-small">
+                                        <label>Unit</label>
+                                        <select
+                                            .value=${ingredient.unit}
+                                            @change=${(e: Event) => this.handleIngredientChange(index, 'unit', (e.target as HTMLSelectElement).value)}
+                                        >
+                                            <option value="cups">cups</option>
+                                            <option value="tablespoons">tablespoons</option>
+                                            <option value="teaspoons">teaspoons</option>
+                                            <option value="grams">grams</option>
+                                            <option value="ounces">ounces</option>
+                                            <option value="pounds">pounds</option>
+                                            <option value="milliliters">milliliters</option>
+                                            <option value="liters">liters</option>
+                                            <option value="pieces">pieces</option>
+                                            <option value="cloves">cloves</option>
+                                            <option value="pinch">pinch</option>
+                                            <option value="to taste">to taste</option>
+                                        </select>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="remove-ingredient"
+                                        @click=${() => this.removeIngredient(index)}
+                                        title="Remove ingredient"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            </div>
+                        `)}
+                            <button type="button" class="add-ingredient" @click=${this.addIngredient}>
+                                + Add Ingredient
+                            </button>
+                        </div>
 
-                        <label>
-                            Cuisine *
-                            <select
+                        <div class="form-section">
+                            <h2>Category & Details</h2>
+
+                            <label>
+                                Cuisine
+                                <select
                                     .value=${this.formData.cuisineId}
                                     @change=${(e: Event) => this.handleInputChange('cuisineId', (e.target as HTMLSelectElement).value)}
-                                    required
-                            >
-                                <option value="">Select a cuisine</option>
-                                ${this.cuisines.map(cuisine => html`
-                                    <option value=${cuisine.idName}>${cuisine.name}</option>
-                                `)}
-                            </select>
-                        </label>
-                    </div>
+                                    required>
+                                    <option value="">Select a cuisine</option>
+                                    ${this.cuisines.map(cuisine => html`
+                                        <option value="${cuisine.idName}">${cuisine.name}</option>
+                                    `)}
+                                </select>
+                            </label>
 
-                    <div class="form-section">
-                        <h2>Ingredients *</h2>
-                        <div class="checkbox-grid">
-                            ${this.ingredients.map(ingredient => html`
-                                <label class="checkbox-label">
-                                    <input
-                                            type="checkbox"
-                                            .checked=${this.formData.ingredientIds.includes(ingredient.idName)}
-                                            @change=${(e: Event) => this.handleMultiSelectChange('ingredientIds', ingredient.idName, (e.target as HTMLInputElement).checked)}
-                                    />
-                                    <span>${ingredient.name}</span>
-                                </label>
-                            `)}
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h2>Meal Plans</h2>
-                        <div class="checkbox-grid">
-                            ${this.mealplans.map(mealplan => html`
-                                <label class="checkbox-label">
-                                    <input
+                            <h3>Meal Plans</h3>
+                            <div class="checkbox-grid">
+                                ${this.mealplans.map(mealplan => html`
+                                    <label class="checkbox-label">
+                                        <input
                                             type="checkbox"
                                             .checked=${this.formData.mealPlanIds.includes(mealplan.idName)}
                                             @change=${(e: Event) => this.handleMultiSelectChange('mealPlanIds', mealplan.idName, (e.target as HTMLInputElement).checked)}
-                                    />
-                                    <span>${mealplan.name}</span>
-                                </label>
-                            `)}
+                                        />
+                                        <span>${mealplan.name}</span>
+                                    </label>
+                                `)}
+                            </div>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h2>Cooking Steps *</h2>
+                        <h2>Cooking Steps</h2>
                         ${this.formData.steps.map((step, index) => html`
                             <div class="step-container">
                                 <div class="step-header">

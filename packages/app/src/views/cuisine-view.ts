@@ -112,12 +112,6 @@ export class CuisineViewElement extends View<Model, Msg> {
             .recipe-card:hover h3 {
                 color: var(--color-link-hover);
             }
-
-            .loading {
-                text-align: center;
-                padding: var(--spacing-xl);
-                color: var(--color-text);
-            }
         `
     ];
 

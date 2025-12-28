@@ -1,6 +1,6 @@
 import {css, html} from "lit";
 import {state} from "lit/decorators.js";
-import {View} from "@calpoly/mustang";
+import {Auth, Observer, View} from "@calpoly/mustang";
 import {globalStyles} from "../styles/globalStyles.css.ts";
 import {Msg} from "../messages";
 import {Model} from "../model";
@@ -12,6 +12,11 @@ export class HomeViewElement extends View<Model, Msg> {
 
     @state()
     private selectedCuisine: string = '';
+
+    @state()
+    private isLoggedIn: boolean = false;
+
+    private _authObserver = new Observer<Auth.Model>(this, 'recipebook:auth');
 
     @state()
     get recipes(): RecipeData[] {
@@ -44,6 +49,11 @@ export class HomeViewElement extends View<Model, Msg> {
 
     connectedCallback() {
         super.connectedCallback();
+        this._authObserver.observe((authModel: Auth.Model) => {
+            const {user} = authModel;
+            this.isLoggedIn = !!(user && user.authenticated);
+            this.requestUpdate();
+        });
         this.dispatchMessage(["recipes/load", {}]);
         this.dispatchMessage(["mealplans/load", {}]);
         this.dispatchMessage(["cuisines/load", {}]);
@@ -161,6 +171,7 @@ export class HomeViewElement extends View<Model, Msg> {
 
             /* Cuisine Filter */
             .filter-section {
+                display: flex;
                 margin-bottom: var(--spacing-xl);
                 opacity: 1;
                 transform: translateY(0);
@@ -177,10 +188,17 @@ export class HomeViewElement extends View<Model, Msg> {
             .filter-header {
                 display: flex;
                 align-items: center;
-                justify-content: flex-start;
+                justify-content: space-between;
                 gap: var(--spacing-lg);
                 margin-bottom: var(--spacing-md);
                 padding: 0 var(--spacing-sm);
+            }
+
+            .filter-left {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-lg);
+                flex-wrap: wrap;
             }
 
             .filter-title {
@@ -196,6 +214,14 @@ export class HomeViewElement extends View<Model, Msg> {
                 width: 20px;
                 height: 20px;
                 fill: var(--color-accent);
+            }
+
+            .filter-summary {
+                font-size: 0.9rem;
+                color: var(--color-text);
+                font-weight: 500;
+                padding: var(--spacing-sm) var(--spacing-md);
+                white-space: nowrap;
             }
 
             .cuisine-filter {
@@ -259,13 +285,13 @@ export class HomeViewElement extends View<Model, Msg> {
 
             .filter-summary {
                 text-align: center;
-                margin-top: var(--spacing-md);
                 padding: var(--spacing-sm);
                 background: var(--color-background-card);
                 border-radius: var(--border-radius-md);
-                border-left: 4px solid var(--color-accent);
+                border-right: 4px solid var(--color-accent);
                 font-size: 0.9rem;
-                color: var(--color-text-muted);
+                color: var(--color-text);
+                margin-left: auto;
             }
 
             .content-grid {
@@ -392,6 +418,7 @@ export class HomeViewElement extends View<Model, Msg> {
                 min-height: 400px;
                 gap: var(--spacing-lg);
             }
+            
 
             .loading-spinner {
                 width: 60px;
@@ -487,31 +514,30 @@ export class HomeViewElement extends View<Model, Msg> {
         return html`
             <div class="filter-section">
                 <div class="filter-header">
-                    <div class="filter-title">
-                        <svg class="filter-icon" viewBox="0 0 24 24">
-                            <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
-                        </svg>
-                        Filter by Cuisine
-                    </div>
-                    ${availableCuisines.map(cuisine => html`
-                        <div
-                                class="cuisine-chip ${this.selectedCuisine === cuisine ? 'selected' : ''}"
-                                @click=${() => this.handleCuisineToggle(cuisine)}
-                        >
-                            <span>${cuisine}</span>
+                    <div class="filter-left">
+                        <div class="filter-title">
+                            <svg class="filter-icon" viewBox="0 0 24 24">
+                                <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
+                            </svg>
+                            Filter by Cuisine
                         </div>
-                    `)}
-                </div>
-
-                <div class="cuisine-filter">
-                    
-                </div>
-
-                ${hasFilter ? html`
-                    <div class="filter-summary">
-                        Showing ${filteredCount} of ${totalCount} recipes for ${this.selectedCuisine} cuisine
+                        ${availableCuisines.map(cuisine => html`
+                            <div
+                                    class="cuisine-chip ${this.selectedCuisine === cuisine ? 'selected' : ''}"
+                                    @click=${() => this.handleCuisineToggle(cuisine)}
+                            >
+                                <span>${cuisine}</span>
+                            </div>
+                        `)}
                     </div>
-                ` : ''}
+                    ${hasFilter ? html`
+                        <div class="filter-summary">
+                            Showing ${filteredCount} of ${totalCount} recipes
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="cuisine-filter">
+                </div>
             </div>
         `;
     }
@@ -643,10 +669,12 @@ export class HomeViewElement extends View<Model, Msg> {
     render() {
         return html`
             <div class="container">
-                <div class="hero-section">
-                    <h1>Welcome to RecipeBook</h1>
-                    <p>Discover amazing recipes and create perfect meal plans for your culinary journey!</p>
-                </div>
+                ${!this.isLoggedIn ? html`
+                    <div class="hero-section">
+                        <h1>Welcome to RecipeBook</h1>
+                        <p>Discover amazing recipes and create perfect meal plans</p>
+                    </div>
+                ` : ''}
 
                 <div class="view-toggle">
                     <div class="toggle-indicator ${this.viewMode}"></div>

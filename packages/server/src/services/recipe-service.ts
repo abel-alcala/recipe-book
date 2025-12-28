@@ -19,7 +19,9 @@ const CuisineReferenceSchema = new Schema<CuisineReference>({
 
 const IngredientReferenceSchema = new Schema<IngredientReference>({
     name: {type: String, required: true},
-    href: {type: String, required: true}
+    quantity: {type: String, required: true},
+    unit: {type: String, required: true},
+    href: {type: String, required: false}
 });
 
 const MealPlanReferenceSchema = new Schema<MealPlanReference>({

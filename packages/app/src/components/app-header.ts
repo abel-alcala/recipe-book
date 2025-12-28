@@ -26,9 +26,11 @@ export class AppHeader extends LitElement {
             if (user && user.authenticated) {
                 this.loggedIn = true;
                 this.userid = user.username;
+                this.setAttribute('data-authenticated', '');
             } else {
                 this.loggedIn = false;
                 this.userid = undefined;
+                this.removeAttribute('data-authenticated');
             }
             this.requestUpdate();
         });
@@ -276,6 +278,15 @@ export class AppHeader extends LitElement {
             a:has(#userid:not(:empty)) ~ menu > .when-signed-out {
                 display: none;
             }
+
+            /* Hide nav.when-signed-in when not authenticated */
+            .main-nav nav.when-signed-in {
+                display: block;
+            }
+
+            :host(:not([data-authenticated])) .main-nav nav.when-signed-in {
+                display: none;
+            }
             
 
             @media (max-width: 775px) {
@@ -323,7 +334,7 @@ export class AppHeader extends LitElement {
                         </a>
                         <menu>
                             <li class="when-signed-in">
-                                <a href="/app/chef/${this.userid}">
+                                <a href="/app/chef/${this.userid}" @click=${this._handleViewProfile}>
                                     View Profile
                                 </a>
                             </li>
@@ -375,7 +386,19 @@ export class AppHeader extends LitElement {
         this.dispatchEvent(darkModeEvent);
     }
 
+    _closeDropdown() {
+        const dropdown = this.shadowRoot?.querySelector('mu-dropdown');
+        if (dropdown) {
+            dropdown.removeAttribute('open');
+        }
+    }
+
+    _handleViewProfile() {
+        this._closeDropdown();
+    }
+
     _handleSignOut(e: MouseEvent) {
+        this._closeDropdown();
         Events.relay(e, 'auth:message', ['auth/signout']);
         window.location.href = '/app';
     }

@@ -83,7 +83,9 @@ export interface CuisineReference {
 
 export interface IngredientReference {
     name: string;
-    href: string;
+    quantity: string;
+    unit: string;
+    href?: string;
 }
 
 export interface MealPlanReference {
