@@ -13,6 +13,11 @@ export type Msg =
         recipe: RecipeData;
         onSuccess?: () => void;
         onFailure?: (err: Error) => void; }]
+    | ["recipe/update", {
+        recipeId: string;
+        recipe: RecipeData;
+        onSuccess?: () => void;
+        onFailure?: (err: Error) => void; }]
     | ["recipes/load", {}]
     | ["cuisine/load", { cuisineId: string }]
     | ["cuisines/load", {}]

@@ -1,6 +1,6 @@
 import { css, html } from "lit";
 import { property, state } from "lit/decorators.js";
-import { View } from "@calpoly/mustang";
+import { View, Auth, History, Observer } from "@calpoly/mustang";
 import { globalStyles } from "../styles/globalStyles.css.ts";
 import { Msg } from "../messages";
 import { Model } from "../model";
@@ -18,8 +18,32 @@ export class RecipeViewElement extends View<Model, Msg> {
     @state()
     private servingCount: number = 1;
 
+    @state()
+    private currentUserId?: string;
+
+    private _authObserver = new Observer<Auth.Model>(this, 'recipebook:auth');
+
     constructor() {
         super("recipebook:model");
+    }
+
+    get isOwnRecipe(): boolean {
+        // Extract username from chef href (e.g., "/app/chef/abel" -> "abel")
+        const chefUsername = this.recipe?.chef.href.split('/').pop();
+        return chefUsername === this.currentUserId;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this._authObserver.observe((authModel: Auth.Model) => {
+            const {user} = authModel;
+            if (user && user.authenticated) {
+                this.currentUserId = user.username;
+            } else {
+                this.currentUserId = undefined;
+            }
+            this.requestUpdate();
+        });
     }
 
     attributeChangedCallback(
@@ -339,6 +363,26 @@ export class RecipeViewElement extends View<Model, Msg> {
                 background: var(--color-background-hover);
             }
 
+            .edit-recipe-btn {
+                background: var(--color-primary);
+                color: white;
+                border: none;
+                padding: var(--spacing-sm) var(--spacing-md);
+                border-radius: var(--border-radius-sm);
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 600;
+                transition: background-color 0.2s, transform 0.2s;
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-xs);
+            }
+
+            .edit-recipe-btn:hover {
+                background-color: var(--color-primary-dark, #3b82f6);
+                transform: translateY(-2px);
+            }
+
             @media (max-width: 900px) {
                 .content-grid {
                     grid-template-columns: 1fr;
@@ -413,6 +457,18 @@ export class RecipeViewElement extends View<Model, Msg> {
                         <span class="label">Cuisine</span>
                         <span class="value"><a href="${this.recipe.cuisine.href}">${this.recipe.cuisine.name}</a></span>
                     </div>
+                    ${this.isOwnRecipe ? html`
+                        <div class="meta-item">
+                            <button
+                                type="button"
+                                class="edit-recipe-btn"
+                                @click=${() => History.dispatch(this, "history/navigate", {
+                                    href: `/app/recipe/${this.recipeId}/edit`
+                                })}>
+                                Edit Recipe
+                            </button>
+                        </div>
+                    ` : ''}
                 </div>
 
                 <div class="content-grid">

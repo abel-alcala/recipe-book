@@ -7,6 +7,7 @@ import { AppHeader } from "./components/app-header";
 import { HomeViewElement } from "./views/home-view";
 import { RecipeViewElement } from "./views/recipe-view";
 import { RecipeCreateElement } from "./components/recipe-create";
+import { RecipeEditElement } from "./components/recipe-edit";
 import { ChefViewElement } from "./views/chef-view";
 import { ChefEditElement} from "./components/profile-edit";
 import { IngredientViewElement } from "./views/ingredient-view";
@@ -31,6 +32,12 @@ const routes = [
     path: "/app/recipe/:id",
     view: (params: Switch.Params) => html`
       <recipe-view recipe-id=${params.id}></recipe-view>
+    `
+  },
+  {
+    path: "/app/recipe/:id/edit",
+    view: (params: Switch.Params) => html`
+      <recipe-edit recipe-id=${params.id}></recipe-edit>
     `
   },
   {
@@ -99,6 +106,7 @@ define({
   "home-view": HomeViewElement,
   "recipe-view": RecipeViewElement,
   "recipe-create": RecipeCreateElement,
+  "recipe-edit": RecipeEditElement,
   "chef-view": ChefViewElement,
   "ingredient-view": IngredientViewElement,
   "cuisine-view": CuisineViewElement,

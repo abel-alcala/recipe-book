@@ -153,9 +153,7 @@ export class HomeViewElement extends View<Model, Msg> {
                 top: var(--spacing-xs);
                 height: calc(100% - var(--spacing-sm));
                 width: calc(50% - var(--spacing-xs));
-                background: linear-gradient(135deg,
-                var(--color-accent) 0%,
-                var(--color-accent-alt) 100%);
+                background: var(--color-accent);
                 border-radius: var(--border-radius-md);
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: 0 4px 12px rgba(158, 206, 106, 0.3);

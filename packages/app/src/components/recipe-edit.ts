@@ -1,20 +1,26 @@
-import { css, html, TemplateResult } from "lit";
-import { state, property } from "lit/decorators.js";
-import { View, Form, define, History, Auth, Observer } from "@calpoly/mustang";
-import { globalStyles } from "../styles/globalStyles.css";
-import { Msg } from "../messages";
-import { Model } from "../model";
-import { ChefData, CuisineData, IngredientData, MealPlanData, RecipeData } from "../types/models.ts";
+import {css, html, TemplateResult} from "lit";
+import {property, state} from "lit/decorators.js";
+import {Auth, define, Form, History, Observer, View} from "@calpoly/mustang";
+import {globalStyles} from "../styles/globalStyles.css";
+import {Msg} from "../messages";
+import {Model} from "../model";
+import {CuisineData, MealPlanData, RecipeData} from "../types/models.ts";
 
-export class RecipeCreateElement extends View<Model, Msg> {
+export class RecipeEditElement extends View<Model, Msg> {
     static uses = define({
         "mu-form": Form.Element,
     });
 
-    @property({ attribute: "user-id" })
-    userId?: string;
+    @property({attribute: "recipe-id"})
+    recipeId?: string;
 
     _authObserver = new Observer<Auth.Model>(this, 'recipebook:auth');
+
+    @state()
+    private currentUserId?: string;
+
+    @state()
+    private isFormPopulated = false;
 
     @state()
     private formData = {
@@ -24,7 +30,11 @@ export class RecipeCreateElement extends View<Model, Msg> {
         servingSize: "",
         difficulty: "Easy",
         cuisineId: "",
-        ingredients: [{ name: "", quantity: "", unit: "cups" }] as Array<{ name: string; quantity: string; unit: string }>,
+        ingredients: [{name: "", quantity: "", unit: "cups"}] as Array<{
+            name: string;
+            quantity: string;
+            unit: string
+        }>,
         mealPlanIds: [] as string[],
         steps: [""]
     };
@@ -36,8 +46,8 @@ export class RecipeCreateElement extends View<Model, Msg> {
     private isSubmitting = false;
 
     @state()
-    get chef(): ChefData | undefined {
-        return this.model.chef;
+    get recipe(): RecipeData | undefined {
+        return this.model.recipe;
     }
 
     constructor() {
@@ -60,14 +70,15 @@ export class RecipeCreateElement extends View<Model, Msg> {
         super.attributeChangedCallback(name, oldValue, newValue);
 
         if (
-            name === "user-id" &&
+            name === "recipe-id" &&
             oldValue !== newValue &&
             newValue
         ) {
-            console.log("Loading chef for recipe creation:", newValue);
+            console.log("Loading recipe for editing:", newValue);
+            this.isFormPopulated = false;
             this.dispatchMessage([
-                "chef/load",
-                { chefId: newValue }
+                "recipe/load",
+                {recipeId: newValue}
             ]);
         }
     }
@@ -75,22 +86,13 @@ export class RecipeCreateElement extends View<Model, Msg> {
     connectedCallback() {
         super.connectedCallback();
 
-        // Set up auth observer to automatically get userId
+        // Set up auth observer to get current user
         this._authObserver.observe((authModel: Auth.Model) => {
-            const { user } = authModel;
+            const {user} = authModel;
             if (user && user.authenticated) {
-                // Automatically set userId from authenticated user
-                if (this.userId !== user.username) {
-                    this.userId = user.username;
-                    console.log("Auto-loaded userId from auth:", this.userId);
-                    // Load chef data when userId is set
-                    this.dispatchMessage([
-                        "chef/load",
-                        { chefId: this.userId }
-                    ]);
-                }
+                this.currentUserId = user.username;
             } else {
-                this.userId = undefined;
+                this.currentUserId = undefined;
             }
             this.requestUpdate();
         });
@@ -98,13 +100,60 @@ export class RecipeCreateElement extends View<Model, Msg> {
         this.dispatchMessage(["cuisines/load", {}]);
         this.dispatchMessage(["mealplans/load", {}]);
 
-        // Load chef if userId is already set (fallback)
-        if (this.userId) {
+        // Load recipe if recipeId is already set (fallback)
+        if (this.recipeId) {
             this.dispatchMessage([
-                "chef/load",
-                { chefId: this.userId }
+                "recipe/load",
+                {recipeId: this.recipeId}
             ]);
         }
+    }
+
+    updated(changedProperties: Map<string, unknown>) {
+        super.updated(changedProperties);
+
+        // When recipe loads, check ownership and populate form
+        if (this.recipe && !this.isFormPopulated) {
+            // Silent authorization check - redirect without error if not owner
+            // Extract username from chef href (e.g., "/app/chef/abel" -> "abel")
+            const chefUsername = this.recipe.chef.href.split('/').pop();
+            if (chefUsername !== this.currentUserId) {
+                History.dispatch(this, "history/navigate", {
+                    href: `/app/recipe/${this.recipeId}`
+                });
+                return;
+            }
+
+            // User owns the recipe, populate the form
+            this.populateFormFromRecipe();
+            this.isFormPopulated = true;
+        }
+    }
+
+    private populateFormFromRecipe() {
+        if (!this.recipe) return;
+
+        // Extract cuisineId from href
+        const cuisineId = this.recipe.cuisine.href.split('/').pop() || '';
+
+        // Extract mealPlanIds from hrefs
+        const mealPlanIds = this.recipe.mealPlans.map(mp => mp.href.split('/').pop() || '');
+
+        this.formData = {
+            name: this.recipe.name,
+            description: this.recipe.description,
+            cookingTime: this.recipe.cookingTime,
+            servingSize: this.recipe.servingSize,
+            difficulty: this.recipe.difficulty,
+            cuisineId: cuisineId,
+            ingredients: this.recipe.ingredients.map(ing => ({
+                name: ing.name,
+                quantity: ing.quantity,
+                unit: ing.unit
+            })),
+            mealPlanIds: mealPlanIds,
+            steps: this.recipe.steps
+        };
     }
 
     private generateIdName(name: string): string {
@@ -114,7 +163,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
     }
 
     private handleInputChange(field: string, value: string) {
-        this.formData = { ...this.formData, [field]: value };
+        this.formData = {...this.formData, [field]: value};
     }
 
     private handleMultiSelectChange(field: 'mealPlanIds', value: string, checked: boolean) {
@@ -125,26 +174,26 @@ export class RecipeCreateElement extends View<Model, Msg> {
             const index = currentValues.indexOf(value);
             if (index > -1) currentValues.splice(index, 1);
         }
-        this.formData = { ...this.formData, [field]: currentValues };
+        this.formData = {...this.formData, [field]: currentValues};
     }
 
     private addIngredient() {
         this.formData = {
             ...this.formData,
-            ingredients: [...this.formData.ingredients, { name: "", quantity: "", unit: "cups" }]
+            ingredients: [...this.formData.ingredients, {name: "", quantity: "", unit: "cups"}]
         };
     }
 
     private removeIngredient(index: number) {
         const ingredients = [...this.formData.ingredients];
         ingredients.splice(index, 1);
-        this.formData = { ...this.formData, ingredients };
+        this.formData = {...this.formData, ingredients};
     }
 
     private handleIngredientChange(index: number, field: 'name' | 'quantity' | 'unit', value: string) {
         const ingredients = [...this.formData.ingredients];
-        ingredients[index] = { ...ingredients[index], [field]: value };
-        this.formData = { ...this.formData, ingredients };
+        ingredients[index] = {...ingredients[index], [field]: value};
+        this.formData = {...this.formData, ingredients};
     }
 
     private addStep() {
@@ -158,14 +207,14 @@ export class RecipeCreateElement extends View<Model, Msg> {
         if (this.formData.steps.length > 1) {
             const steps = [...this.formData.steps];
             steps.splice(index, 1);
-            this.formData = { ...this.formData, steps };
+            this.formData = {...this.formData, steps};
         }
     }
 
     private handleStepChange(index: number, value: string) {
         const steps = [...this.formData.steps];
         steps[index] = value;
-        this.formData = { ...this.formData, steps };
+        this.formData = {...this.formData, steps};
     }
 
     private validateForm(): boolean {
@@ -175,8 +224,8 @@ export class RecipeCreateElement extends View<Model, Msg> {
         if (!this.formData.description.trim()) errors.push("Description is required");
         if (!this.formData.cookingTime.trim()) errors.push("Cooking time is required");
         if (!this.formData.servingSize.trim()) errors.push("Serving size is required");
-        if (!this.userId) errors.push("User ID is required - please ensure you're logged in");
-        if (!this.chef) errors.push("Chef profile not found - please ensure you're logged in");
+        if (!this.recipeId) errors.push("Recipe ID is required");
+        if (!this.recipe) errors.push("Recipe not found");
         if (!this.formData.cuisineId) errors.push("Cuisine selection is required");
         if (this.formData.ingredients.length === 0) errors.push("At least one ingredient is required");
         if (this.formData.ingredients.some(ing => !ing.name.trim() || !ing.quantity.trim())) {
@@ -191,29 +240,25 @@ export class RecipeCreateElement extends View<Model, Msg> {
     private handleSubmit(event: Event) {
         event.preventDefault();
 
-        if (!this.validateForm() || this.isSubmitting) return;
+        if (!this.validateForm() || this.isSubmitting || !this.recipe || !this.recipeId) return;
 
         this.isSubmitting = true;
         this.errors = [];
 
-        const idName = this.generateIdName(this.formData.name);
         const selectedCuisine = this.cuisines.find(cuisine => cuisine.idName === this.formData.cuisineId);
         const selectedMealPlans = this.mealplans.filter(mealplan =>
             this.formData.mealPlanIds.includes(mealplan.idName)
         );
 
-        const recipe: RecipeData = {
-            idName,
+        const updatedRecipe: RecipeData = {
+            idName: this.recipe.idName, // Keep existing idName
             name: this.formData.name,
             description: this.formData.description,
-            imageUrl: `images/${idName}.png`,
+            imageUrl: this.recipe.imageUrl, // Keep existing imageUrl
             cookingTime: this.formData.cookingTime,
             servingSize: this.formData.servingSize,
             difficulty: this.formData.difficulty,
-            chef: {
-                name: this.chef?.name || "",
-                href: `/app/chef/${this.userId}`
-            },
+            chef: this.recipe.chef, // Keep existing chef info
             cuisine: {
                 name: selectedCuisine?.name || "",
                 href: `/app/cuisine/${this.formData.cuisineId}`
@@ -231,13 +276,14 @@ export class RecipeCreateElement extends View<Model, Msg> {
         };
 
         this.dispatchMessage([
-            "recipe/create",
+            "recipe/update",
             {
-                recipe,
+                recipeId: this.recipeId,
+                recipe: updatedRecipe,
                 onSuccess: () => {
                     this.isSubmitting = false;
                     History.dispatch(this, "history/navigate", {
-                        href: `/app/recipe/${idName}`
+                        href: `/app/recipe/${this.recipeId}`
                     });
                 },
                 onFailure: (error: Error) => {
@@ -324,7 +370,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
                 display: flex;
                 gap: var(--spacing-lg);
             }
-            
+
             .chef-details {
                 display: flex;
                 flex-direction: column;
@@ -731,20 +777,19 @@ export class RecipeCreateElement extends View<Model, Msg> {
     render(): TemplateResult {
         this.removeMuFormDefaultStyles();
 
-        // Show loading if we're waiting for chef data
-        if (!this.chef && this.userId) {
+        if (!this.recipe && this.recipeId) {
             return html`
                 <div class="container">
-                    <div class="loading">Loading chef profile...</div>
+                    <div class="loading">Loading recipe...</div>
                 </div>
             `;
         }
 
-        if (!this.chef) {
+        if (!this.recipe) {
             return html`
                 <div class="container">
                     <div class="error-message">
-                        <p>Chef profile not found. Please ensure you're logged in.</p>
+                        <p>Recipe not found.</p>
                     </div>
                 </div>
             `;
@@ -753,17 +798,15 @@ export class RecipeCreateElement extends View<Model, Msg> {
         return html`
             <div class="container">
                 <div class="page-header">
-                    <h1>Create New Recipe</h1>
+                    <h1>Edit Recipe</h1>
                     <div class="chef-info">
                         <div class="chef-details">
-                            <h3>Author: ${this.chef.name}</h3>
-                            <p>This recipe will be added to your chef profile</p>
+                            <h3>Author: ${this.recipe.chef.name}</h3>
+                            <p>Editing your recipe</p>
                         </div>
-                        <img src="${this.chef.imageUrl}" alt="${this.chef.name}" />
                     </div>
                 </div>
 
-                
 
                 ${this.errors.length > 0 ? html`
                     <div class="error-message">
@@ -838,60 +881,59 @@ export class RecipeCreateElement extends View<Model, Msg> {
                         <div class="form-section">
                             <h2>Ingredients</h2>
                             <p class="section-description">Add ingredients with their quantities per serving</p>
-                        ${this.formData.ingredients.map((ingredient, index) => html`
-                            <div class="ingredient-container">
-                                <div class="ingredient-row">
-                                    <div class="ingredient-field">
-                                        <label>Ingredient Name</label>
-                                        <input
-                                            type="text"
-                                            .value=${ingredient.name}
-                                            @input=${(e: Event) => this.handleIngredientChange(index, 'name', (e.target as HTMLInputElement).value)}
-                                            placeholder="e.g., All-purpose flour"
-                                            required
-                                        />
+                            ${this.formData.ingredients.map((ingredient, index) => html`
+                                <div class="ingredient-container">
+                                    <div class="ingredient-row">
+                                        <div class="ingredient-field">
+                                            <label>Ingredient Name</label>
+                                            <input
+                                                    type="text"
+                                                    .value=${ingredient.name}
+                                                    @input=${(e: Event) => this.handleIngredientChange(index, 'name', (e.target as HTMLInputElement).value)}
+                                                    placeholder="e.g., All-purpose flour"
+                                                    required
+                                            />
+                                        </div>
+                                        <div class="ingredient-field ingredient-field-small">
+                                            <label>Quantity</label>
+                                            <input
+                                                    type="text"
+                                                    .value=${ingredient.quantity}
+                                                    @input=${(e: Event) => this.handleIngredientChange(index, 'quantity', (e.target as HTMLInputElement).value)}
+                                                    placeholder="e.g., 2"
+                                                    required
+                                            />
+                                        </div>
+                                        <div class="ingredient-field ingredient-field-small">
+                                            <label>Unit</label>
+                                            <select
+                                                    .value=${ingredient.unit}
+                                                    @change=${(e: Event) => this.handleIngredientChange(index, 'unit', (e.target as HTMLSelectElement).value)}
+                                            >
+                                                <option value="cups">cups</option>
+                                                <option value="tablespoons">tablespoons</option>
+                                                <option value="teaspoons">teaspoons</option>
+                                                <option value="grams">grams</option>
+                                                <option value="ounces">ounces</option>
+                                                <option value="pounds">pounds</option>
+                                                <option value="milliliters">milliliters</option>
+                                                <option value="liters">liters</option>
+                                                <option value="pieces">pieces</option>
+                                                <option value="cloves">cloves</option>
+                                                <option value="pinch">pinch</option>
+                                                <option value="to taste">to taste</option>
+                                            </select>
+                                        </div>
+                                        <button
+                                                type="button"
+                                                class="remove-ingredient"
+                                                @click=${() => this.removeIngredient(index)}
+                                                title="Remove ingredient"
+                                        >×
+                                        </button>
                                     </div>
-                                    <div class="ingredient-field ingredient-field-small">
-                                        <label>Quantity</label>
-                                        <input
-                                            type="text"
-                                            .value=${ingredient.quantity}
-                                            @input=${(e: Event) => this.handleIngredientChange(index, 'quantity', (e.target as HTMLInputElement).value)}
-                                            placeholder="e.g., 2"
-                                            required
-                                        />
-                                    </div>
-                                    <div class="ingredient-field ingredient-field-small">
-                                        <label>Unit</label>
-                                        <select
-                                            .value=${ingredient.unit}
-                                            @change=${(e: Event) => this.handleIngredientChange(index, 'unit', (e.target as HTMLSelectElement).value)}
-                                        >
-                                            <option value="cups">cups</option>
-                                            <option value="tablespoons">tablespoons</option>
-                                            <option value="teaspoons">teaspoons</option>
-                                            <option value="grams">grams</option>
-                                            <option value="ounces">ounces</option>
-                                            <option value="pounds">pounds</option>
-                                            <option value="milliliters">milliliters</option>
-                                            <option value="liters">liters</option>
-                                            <option value="pieces">pieces</option>
-                                            <option value="cloves">cloves</option>
-                                            <option value="pinch">pinch</option>
-                                            <option value="to taste">to taste</option>
-                                        </select>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        class="remove-ingredient"
-                                        @click=${() => this.removeIngredient(index)}
-                                        title="Remove ingredient"
-                                    >
-                                        ×
-                                    </button>
                                 </div>
-                            </div>
-                        `)}
+                            `)}
                             <button type="button" class="add-ingredient" @click=${this.addIngredient}>
                                 + Add Ingredient
                             </button>
@@ -903,9 +945,9 @@ export class RecipeCreateElement extends View<Model, Msg> {
                             <label>
                                 Cuisine
                                 <select
-                                    .value=${this.formData.cuisineId}
-                                    @change=${(e: Event) => this.handleInputChange('cuisineId', (e.target as HTMLSelectElement).value)}
-                                    required>
+                                        .value=${this.formData.cuisineId}
+                                        @change=${(e: Event) => this.handleInputChange('cuisineId', (e.target as HTMLSelectElement).value)}
+                                        required>
                                     <option value="">Select a cuisine</option>
                                     ${this.cuisines.map(cuisine => html`
                                         <option value="${cuisine.idName}">${cuisine.name}</option>
@@ -918,9 +960,9 @@ export class RecipeCreateElement extends View<Model, Msg> {
                                 ${this.mealplans.map(mealplan => html`
                                     <label class="checkbox-label">
                                         <input
-                                            type="checkbox"
-                                            .checked=${this.formData.mealPlanIds.includes(mealplan.idName)}
-                                            @change=${(e: Event) => this.handleMultiSelectChange('mealPlanIds', mealplan.idName, (e.target as HTMLInputElement).checked)}
+                                                type="checkbox"
+                                                .checked=${this.formData.mealPlanIds.includes(mealplan.idName)}
+                                                @change=${(e: Event) => this.handleMultiSelectChange('mealPlanIds', mealplan.idName, (e.target as HTMLInputElement).checked)}
                                         />
                                         <span>${mealplan.name}</span>
                                     </label>
@@ -937,7 +979,8 @@ export class RecipeCreateElement extends View<Model, Msg> {
                                     <div class="step-header">
                                         <h3>Step ${index + 1}</h3>
                                         ${this.formData.steps.length > 1 ? html`
-                                            <button type="button" class="remove-step" @click=${() => this.removeStep(index)}>
+                                            <button type="button" class="remove-step"
+                                                    @click=${() => this.removeStep(index)}>
                                                 Remove Step
                                             </button>
                                         ` : ''}
@@ -961,7 +1004,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
                         <button
                                 type="button"
                                 class="cancel-button"
-                                @click=${() => History.dispatch(this, "history/navigate", { href: "/app" })}
+                                @click=${() => History.dispatch(this, "history/navigate", {href: "/app"})}
                         >
                             Cancel
                         </button>
@@ -970,7 +1013,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
                                 @click=${this.handleSubmit}
                                 .disabled=${this.isSubmitting}
                         >
-                            ${this.isSubmitting ? 'Creating Recipe...' : 'Create Recipe'}
+                            ${this.isSubmitting ? 'Updating Recipe...' : 'Update Recipe'}
                         </button>
                     </div>
                 </div>

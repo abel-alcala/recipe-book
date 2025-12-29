@@ -41,6 +41,30 @@ export class AppHeader extends LitElement {
         if (!this.isDarkMode) {
             this.classList.add('light-mode');
         }
+
+        // Add click-outside listener for dropdown
+        this._handleClickOutside = this._handleClickOutside.bind(this);
+        document.addEventListener('click', this._handleClickOutside);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        document.removeEventListener('click', this._handleClickOutside);
+    }
+
+    _handleClickOutside(event: MouseEvent) {
+        const dropdown = this.shadowRoot?.querySelector('mu-dropdown');
+        if (!dropdown || !dropdown.hasAttribute('open')) {
+            return;
+        }
+
+        const target = event.target as Node;
+        const composedPath = event.composedPath();
+
+        // Check if click is outside the dropdown
+        if (!composedPath.includes(dropdown)) {
+            this._closeDropdown();
+        }
     }
 
     firstUpdated() {

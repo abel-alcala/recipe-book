@@ -71,6 +71,22 @@ export default function update(
                 });
             break;
 
+        case "recipe/update":
+            updateRecipe(message[1], user)
+                .then((recipe) =>
+                    apply((model) => ({...model, recipe}))
+                )
+                .then(() => {
+                    const {onSuccess} = message[1];
+                    if (onSuccess) onSuccess();
+                })
+                .catch((error) => {
+                    console.error("Failed to update recipe:", error);
+                    const {onFailure} = message[1];
+                    if (onFailure) onFailure(error);
+                });
+            break;
+
         case "recipes/load":
             loadRecipes()
                 .then((recipes) =>
@@ -259,6 +275,35 @@ function createRecipe(
         })
         .then((json: unknown) => {
             console.log("Recipe created:", json);
+            return json as RecipeData;
+        });
+}
+
+function updateRecipe(
+    payload: { recipeId: string; recipe: RecipeData },
+    user: Auth.User
+): Promise<RecipeData> {
+    return fetch(`/api/recipes/${payload.recipeId}`, {
+        method: "PUT",
+        headers: {
+            ...Auth.headers(user),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload.recipe)
+    })
+        .then((response: Response) => {
+            if (response.status === 200) {
+                return response.json();
+            } else if (response.status === 401) {
+                throw new Error("You must be logged in to edit recipes");
+            } else if (response.status === 403) {
+                throw new Error("You can only edit your own recipes");
+            } else {
+                throw new Error(`Failed to update recipe: ${response.status}`);
+            }
+        })
+        .then((json: unknown) => {
+            console.log("Recipe updated:", json);
             return json as RecipeData;
         });
 }

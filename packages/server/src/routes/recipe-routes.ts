@@ -1,8 +1,27 @@
 import express, {Request, Response} from "express";
 import {RecipeData} from "../models/recipe-model";
 import Recipes from "../services/recipe-service";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
+
+// Helper function to extract username from JWT token
+function getUsernameFromToken(req: Request): string | null {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) return null;
+
+    try {
+        const decoded = jwt.verify(token, process.env.TOKEN_SECRET || "NOT_A_SECRET") as any;
+        return decoded.username;
+    } catch {
+        return null;
+    }
+}
 
 // GET all recipes
 router.get("/", (_: Request, res: Response) => {
@@ -35,9 +54,26 @@ router.post("/", (req: Request, res: Response) => {
 router.put("/:idName", (req: Request, res: Response) => {
     const {idName} = req.params;
     const updatedRecipe = req.body;
+    const username = getUsernameFromToken(req);
 
-    Recipes.update(idName, updatedRecipe)
-        .then((recipe: RecipeData) => res.json(recipe))
+    if (!username) {
+        res.status(401).send("You must be logged in to edit recipes");
+        return;
+    }
+
+    // First, fetch the existing recipe to check ownership
+    Recipes.get(idName)
+        .then((existingRecipe: RecipeData) => {
+            // Check if the user owns this recipe
+            if (existingRecipe.chef.name !== username) {
+                res.status(403).send("You can only edit your own recipes");
+                return;
+            }
+
+            // User owns the recipe, proceed with update
+            return Recipes.update(idName, updatedRecipe)
+                .then((recipe: RecipeData) => res.json(recipe));
+        })
         .catch((err) => res.status(404).send(err));
 });
 
