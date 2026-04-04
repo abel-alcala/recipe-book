@@ -1,6 +1,7 @@
 import express, {Request, Response} from "express";
 import {ChefData} from "../models/chef-model";
 import Chefs from "../services/chef-service";
+import {authenticateUser} from "./auth";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
@@ -40,7 +41,7 @@ router.get("/:idName", (req: Request, res: Response) => {
 });
 
 // POST new chef
-router.post("/", (req: Request, res: Response) => {
+router.post("/", authenticateUser, (req: Request, res: Response) => {
     const newChef = req.body;
     const username = getUsernameFromToken(req);
     if (!username) {
@@ -59,7 +60,7 @@ router.post("/", (req: Request, res: Response) => {
 });
 
 // PUT a chef
-router.put("/:idName", (req: Request, res: Response) => {
+router.put("/:idName", authenticateUser, (req: Request, res: Response) => {
     const {idName} = req.params;
     const updatedChef = req.body;
     const username = getUsernameFromToken(req);
@@ -83,7 +84,7 @@ router.put("/:idName", (req: Request, res: Response) => {
 });
 
 // DELETE a chef
-router.delete("/:idName", (req: Request, res: Response) => {
+router.delete("/:idName", authenticateUser, (req: Request, res: Response) => {
     const {idName} = req.params;
     const username = getUsernameFromToken(req);
 

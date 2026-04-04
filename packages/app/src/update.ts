@@ -173,9 +173,7 @@ function loadChef(
     payload: { chefId: string },
     user: Auth.User
 ): Promise<ChefData | undefined> {
-    return fetch(`/api/chefs/${payload.chefId}`, {
-        headers: Auth.headers(user)
-    })
+    return fetch(`/api/chefs/${payload.chefId}`)
         .then((response: Response) => {
             if (response.status === 200) {
                 return response.json();
@@ -218,9 +216,7 @@ function saveChef(
 }
 
 function loadChefs(user: Auth.User): Promise<ChefData[]> {
-    return fetch("/api/chefs", {
-        headers: Auth.headers(user)
-    })
+    return fetch("/api/chefs")
         .then((response: Response) => {
             if (response.status === 200) {
                 return response.json();

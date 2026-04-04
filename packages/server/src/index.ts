@@ -39,7 +39,7 @@ app.use("/app", (_: Request, res: Response) => {
 });
 
 app.use("/api/ingredients", authenticateUser, ingredients);
-app.use("/api/chefs", authenticateUser, chefs);
+app.use("/api/chefs", chefs);
 app.use("/api/cuisines", authenticateUser, cuisines);
 app.use("/api/mealplans", mealplans);
 app.use("/api/recipes/create", authenticateUser, recipes);
