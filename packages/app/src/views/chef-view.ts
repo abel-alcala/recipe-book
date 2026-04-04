@@ -80,9 +80,8 @@ export class ChefViewElement extends View<Model, Msg> {
 
             .profile-header {
                 display: flex;
-                gap: var(--spacing-xl);
-                padding: var(--spacing-xl) 0;
-                border-bottom: 1px solid var(--color-border);
+                flex-direction: column;
+                padding: var(--spacing-xl) 0 0;
             }
 
             .profile-image {
@@ -97,18 +96,6 @@ export class ChefViewElement extends View<Model, Msg> {
                 border: 2px solid var(--color-border);
             }
 
-            .profile-info {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                gap: var(--spacing-md);
-            }
-
-            .profile-info-header {
-                display: flex;
-                align-items: center;
-                gap: var(--spacing-lg);
-            }
 
             .username {
                 font-size: 1.5rem;
@@ -117,24 +104,9 @@ export class ChefViewElement extends View<Model, Msg> {
                 margin: 0;
             }
 
-            .settings-button {
-                background: none;
-                border: none;
-                cursor: pointer;
-                padding: var(--spacing-xs);
-                color: var(--color-text);
-                font-size: 1.5rem;
-                display: flex;
-                align-items: center;
-            }
-
-            .settings-button:hover {
-                opacity: 0.7;
-            }
-
             .stats {
                 display: flex;
-                gap: var(--spacing-xl);
+                margin-top: var(--spacing-sm);
             }
 
             .stat {
@@ -209,7 +181,9 @@ export class ChefViewElement extends View<Model, Msg> {
             }
 
             .recipes-section {
+                border-top: 1px solid var(--color-border);
                 padding-top: var(--spacing-lg);
+                margin-top: var(--spacing-lg);
             }
 
             .recipes-grid {
@@ -255,35 +229,151 @@ export class ChefViewElement extends View<Model, Msg> {
                 color: var(--color-text-secondary);
             }
 
+            /* Profile Main - Image + Info Wrapper */
+            .profile-main {
+                display: flex;
+                gap: var(--spacing-lg);
+                align-items: flex-start;
+            }
+
+            .profile-info-compact {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-content: space-evenly;
+            }
+
+            .profile-names{
+                display: flex;
+                flex-direction: row;
+                gap: var(--spacing-xl);
+                
+            }
+
+            .stats-desktop {
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Bio Section */
+            .bio-section {
+                display: flex;
+                gap: var(--spacing-lg);
+                margin-top: var(--spacing-md);
+            }
+
+
+            .edit-profile-button {
+                width: auto;
+                padding: var(--spacing-sm) var(--spacing-md);
+                background: var(--color-background-card);
+                border: 1px solid var(--color-border);
+                border-radius: var(--border-radius-sm);
+                color: var(--color-text);
+                font-weight: 600;
+                font-size: 0.875rem;
+                cursor: pointer;
+                min-height: 44px;
+            }
+            
+            
+
+            .edit-profile-button:hover {
+                background: var(--color-background-hover, var(--color-background-card));
+                opacity: 0.9;
+            }
+            
+            .settings-button {
+                display: none;
+            }
+
+
             @media (max-width: 768px) {
+                /* Stack profile sections vertically */
                 .profile-header {
-                    gap: var(--spacing-lg);
+                    flex-direction: column;
+                    gap: var(--spacing-md);
+                    padding: var(--spacing-md) 0;
                 }
 
+                /* Profile main section (keep horizontal) */
+                .profile-main {
+                    gap: var(--spacing-md);
+                    align-items: flex-start;
+                }
+
+                
                 .profile-image img {
-                    width: 77px;
-                    height: 77px;
+                    width: 110px;
+                    height: 110px;
+                }
+
+                .profile-info-compact {
+                    gap: 2px;
                 }
 
                 .username {
-                    font-size: 1.2rem;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    margin: 0;
                 }
 
-                .stats {
-                    gap: var(--spacing-lg);
+                .full-name {
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    margin: 0;
                 }
 
-                .stat {
-                    font-size: 0.9rem;
+                /* Bio section */
+                .bio-section {
+                    margin-top: var(--spacing-sm);
+                }
+
+                .bio {
+                    font-size: 0.875rem;
+                    line-height: 1.4;
+                }
+                
+                .action-buttons {
+                    display: none;
+                    margin-top: var(--spacing-sm);
+                }
+                .settings-button {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: var(--spacing-xs);
+                    color: var(--color-text);
+                    font-size: 1.5rem;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .settings-button:hover {
+                    opacity: 0.7;
+                }
+
+                .highlights-title {
+                    font-size: 0.875rem;
+                    margin-bottom: var(--spacing-sm);
                 }
 
                 .highlight-circle {
-                    width: 62px;
-                    height: 62px;
+                    width: 90px;
+                    height: 90px;
+                    font-size: 0.65rem;
                 }
 
                 .highlight-label {
-                    max-width: 62px;
+                    font-size: 0.7rem;
+                    max-width: 90px;
+                    max-height: 60px;
+                    text-wrap: auto;
+                }
+
+                /* Container padding */
+                .container {
+                    padding: var(--spacing-md);
                 }
             }
         `
@@ -309,42 +399,59 @@ export class ChefViewElement extends View<Model, Msg> {
         return html`
             <div class="container">
                 <div class="profile-header">
-                    <div class="profile-image">
-                        <img src="${this.chef.imageUrl}" alt="${this.chef.name}">
-                    </div>
-                    <div class="profile-info">
-                        <div class="profile-info-header">
-                            <h1 class="username">@${this.chefId}</h1>
-                            <div class="stats">
-                                <span class="stat"><strong>${this.chef.recipes.length}</strong> recipes</span>
-                            </div>
-                            ${this.isOwnProfile ? html`
+                    <!-- Profile Main (Image + Info) -->
+                    <div class="profile-main">
+                        <div class="profile-image">
+                            <img src="${this.chef.imageUrl}" alt="${this.chef.name}">
+                        </div>
+                        <div class="profile-info-compact">
+                            <div class="profile-names">
+                                <p class="full-name">${this.chef.name}</p>
+                                <h1 class="username">@${this.chefId}</h1>
+                                ${this.isOwnProfile ? html`
+                        <div class="action-buttons">
+                            <button
+                                class="edit-profile-button"
+                                @click=${() => History.dispatch(this, "history/navigate", {
+                                    href: `/app/chef/${this.chefId}/edit`
+                                })}
+                                title="Edit Profile">
+                                Edit profile
+                            </button>
+                        </div>
+                    ` : ''}
+                                ${this.isOwnProfile ? html`
                                 <button
                                     class="settings-button"
                                     @click=${() => History.dispatch(this, "history/navigate", {
-                                        href: `/app/chef/${this.chefId}/edit`
-                                    })}
+                                    href: `/app/chef/${this.chefId}/edit`
+                                })}
                                     title="Edit Profile">
                                     ⚙️
                                 </button>
                             ` : ''}
-                        </div>
-                        <p class="full-name">${this.chef.name}</p>
-                        <p class="bio">${this.chef.bio}</p>
-                    </div>
-                    <div class="highlights-section">
-                        <h2 class="highlights-title">Favorite Dishes</h2>
-                        <div class="highlights">
-                            ${this.chef.favoriteDishes.map(dish => html`
-                            <div class="highlight">
-                                <div class="highlight-circle">${dish}</div>
                             </div>
-                        `)}
+                            <div class="stats stats-desktop">
+                                <span class="stat"><strong>${this.chef.recipes.length}</strong> recipes</span>
+                                <div class="bio-section">
+                                    <p class="bio">${this.chef.bio}</p>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                </div>
+                <div class="highlights-section">
+                    <h2 class="highlights-title">Favorite Dishes</h2>
+                    <div class="highlights">
+                        ${this.chef.favoriteDishes.map(dish => html`
+                                <div class="highlight">
+                                    <div class="highlight-circle">${dish}</div>
+                                    <div class="highlight-label">${dish}</div>
+                                </div>
+                            `)}
                     </div>
                 </div>
-
-               
 
                 <div class="recipes-section">
                     <div class="recipes-grid">

@@ -356,25 +356,25 @@ export class RecipeCreateElement extends View<Model, Msg> {
             .recipe-form {
                 display: flex;
                 flex-direction: column;
-                gap: var(--spacing-xxl, 3rem);
+                gap: var(--spacing-xl);
             }
 
             .form-section {
-                background: var(--color-background-card);
-                border-radius: 8px;
-                border: 1px solid var(--color-border);
-                padding: var(--spacing-xl);
+                padding: 0;
             }
 
             .form-section h2 {
-                font-size: 1.5rem;
-                color: var(--color-primary);
+                font-size: 1.25rem;
+                color: var(--color-text);
                 font-weight: 600;
+                margin: 0 0 var(--spacing-lg) 0;
+                padding-bottom: var(--spacing-sm);
+                border-bottom: 1px solid var(--color-border);
             }
 
             .form-section h3 {
-                margin: var(--spacing-md) 0 var(--spacing-md) 0;
-                font-size: 1.5rem;
+                margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+                font-size: 1.1rem;
                 font-weight: 600;
                 color: var(--color-text);
             }
@@ -422,7 +422,6 @@ export class RecipeCreateElement extends View<Model, Msg> {
             }
 
             textarea {
-                min-height: 120px;
                 resize: vertical;
                 line-height: 1.5;
             }
@@ -432,26 +431,27 @@ export class RecipeCreateElement extends View<Model, Msg> {
                 font-size: 0.9rem;
                 margin: var(--spacing-sm) 0 var(--spacing-md) 0;
             }
+            
+            .ingredient-list{
+                max-height: 400px;
+                overflow-y: auto;
+            }
 
             .ingredient-container {
-                margin-bottom: var(--spacing-md);
+                margin-bottom: var(--spacing-sm);
+                padding-bottom: var(--spacing-sm);
+                border-bottom: 1px solid var(--color-border);
+            }
+
+            .ingredient-container:last-of-type {
+                border-bottom: none;
             }
 
             .ingredient-row {
                 display: grid;
                 grid-template-columns: 2.5fr 1fr 1.5fr auto;
-                gap: var(--spacing-lg);
+                gap: var(--spacing-md);
                 align-items: end;
-                padding: var(--spacing-lg);
-                background: var(--color-background-page);
-                border: 2px solid var(--color-border);
-                border-radius: var(--border-radius-md, 8px);
-                transition: border-color 0.2s, box-shadow 0.2s;
-            }
-
-            .ingredient-row:hover {
-                border-color: var(--color-primary);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             }
 
             .ingredient-field {
@@ -483,6 +483,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
                 font-size: 1.5rem;
                 cursor: pointer;
                 display: flex;
+                align-self: center;
                 align-items: center;
                 justify-content: center;
                 line-height: 1;
@@ -496,26 +497,21 @@ export class RecipeCreateElement extends View<Model, Msg> {
             }
 
             .add-ingredient {
-                background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
-                color: white;
-                border: none;
-                padding: var(--spacing-md) var(--spacing-xl);
+                background: transparent;
+                color: var(--color-primary);
+                border: 1px dashed var(--color-primary);
+                padding: var(--spacing-sm) var(--spacing-lg);
                 border-radius: var(--border-radius-md, 8px);
-                font-size: 1rem;
-                font-weight: 600;
+                font-size: 0.95rem;
+                font-weight: 500;
                 cursor: pointer;
-                transition: transform 0.2s, box-shadow 0.2s;
+                transition: background-color 0.2s, border-color 0.2s;
                 margin-top: var(--spacing-md);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
 
             .add-ingredient:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            }
-
-            .add-ingredient:active {
-                transform: translateY(0);
+                background: var(--color-background-hover);
+                border-style: solid;
             }
 
             .checkbox-grid {
@@ -554,30 +550,26 @@ export class RecipeCreateElement extends View<Model, Msg> {
 
             .step-container {
                 position: relative;
-                margin-bottom: var(--spacing-lg);
-                padding: var(--spacing-lg);
-                border: 2px solid var(--color-border);
-                border-radius: var(--border-radius-md, 8px);
-                background: var(--color-background-page);
-                transition: border-color 0.2s, box-shadow 0.2s;
+                margin-bottom: var(--spacing-md);
+                padding-bottom: var(--spacing-md);
+                border-bottom: 1px solid var(--color-border);
             }
 
-            .step-container:hover {
-                border-color: var(--color-primary);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            .step-container:last-of-type {
+                border-bottom: none;
             }
 
             .step-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: var(--spacing-md);
+                margin-bottom: var(--spacing-sm);
             }
 
             .step-header h3 {
                 margin: 0;
-                color: var(--color-primary);
-                font-size: 1.2rem;
+                color: var(--color-text);
+                font-size: 1rem;
                 font-weight: 600;
             }
 
@@ -599,58 +591,50 @@ export class RecipeCreateElement extends View<Model, Msg> {
             }
 
             .add-step {
-                background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
-                color: white;
-                border: none;
-                padding: var(--spacing-md) var(--spacing-xl);
+                background: transparent;
+                color: var(--color-primary);
+                border: 1px dashed var(--color-primary);
+                padding: var(--spacing-sm) var(--spacing-lg);
                 border-radius: var(--border-radius-md, 8px);
-                font-size: 1rem;
-                font-weight: 600;
+                font-size: 0.95rem;
+                font-weight: 500;
                 cursor: pointer;
-                transition: transform 0.2s, box-shadow 0.2s;
-                margin-bottom: var(--spacing-lg);
+                transition: background-color 0.2s, border-color 0.2s;
+                margin-top: var(--spacing-sm);
                 width: fit-content;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
 
             .add-step:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            }
-
-            .add-step:active {
-                transform: translateY(0);
+                background: var(--color-background-hover);
+                border-style: solid;
             }
 
             .form-actions {
                 display: flex;
-                gap: var(--spacing-lg);
-                justify-content: center;
-                padding-top: var(--spacing-xl, 3rem);
-                border-top: 2px solid var(--color-border);
+                gap: var(--spacing-md);
+                justify-content: flex-end;
+                padding-top: var(--spacing-xl);
+                margin-top: var(--spacing-lg);
+                border-top: 1px solid var(--color-border);
             }
 
             .form-actions button {
-                padding: var(--spacing-md) var(--spacing-xxl, 3rem);
+                padding: var(--spacing-sm) var(--spacing-xl);
                 border-radius: var(--border-radius-md, 8px);
-                font-size: 1.1rem;
+                font-size: 1rem;
                 font-weight: 600;
                 cursor: pointer;
-                transition: transform 0.2s, box-shadow 0.2s;
-                min-width: 150px;
+                transition: opacity 0.2s;
             }
 
             .cancel-button {
-                border: 2px solid var(--color-border);
-                background: var(--color-background-page);
+                border: 1px solid var(--color-border);
+                background: transparent;
                 color: var(--color-text-secondary);
             }
 
             .cancel-button:hover {
                 background: var(--color-background-hover);
-                border-color: var(--color-text-secondary);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             }
 
             .error-message {
@@ -675,54 +659,194 @@ export class RecipeCreateElement extends View<Model, Msg> {
 
             @media (max-width: 900px) {
                 .form-grid {
+                    margin-bottom: var(--spacing-lg);
                     grid-template-columns: 1fr;
                 }
+                
             }
 
             @media (max-width: 768px) {
-                .container {
-                    padding: 0 var(--spacing-md) var(--spacing-lg);
-                }
-
-                .page-header h1 {
-                    font-size: 2rem;
-                }
-
-                .form-row {
-                    flex-direction: column;
-                }
-
-                .checkbox-grid {
-                    grid-template-columns: 1fr;
-                }
-
-                .chef-info {
-                    flex-direction: column;
-                    text-align: center;
-                    padding: var(--spacing-lg);
-                }
-
-                .ingredient-row {
-                    grid-template-columns: 1fr;
-                    gap: var(--spacing-md);
+                :host {
                     padding: var(--spacing-md);
                 }
 
-                .remove-ingredient {
-                    justify-self: flex-end;
+                .container {
+                    padding: 0 var(--spacing-sm) var(--spacing-md);
                 }
 
-                .form-section {
-                    padding: var(--spacing-lg);
-                }
-
-                .form-actions {
+                /* Page header mobile improvements */
+                .page-header {
                     flex-direction: column;
                     gap: var(--spacing-md);
+                    text-align: center;
+                    margin-bottom: var(--spacing-lg);
+                    padding-bottom: var(--spacing-lg);
+                    border-bottom: 1px solid var(--color-border);
+                }
+                .step-container {
+                    margin-bottom: var(--spacing-xs);
+                    padding-bottom: var(--spacing-xs);
+                }
+                .page-header h1 {
+                    font-size: 1.5rem;
+                    line-height: 1.2;
+                }
+
+                .chef-info {
+                    flex-direction: row-reverse;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: left;
+                    gap: var(--spacing-sm);
+                }
+
+                .chef-details {
+                    align-items: flex-start;
+                }
+
+                .chef-info img {
+                    width: 75px;
+                    height: 75px;
+                }
+
+                .chef-info h3 {
+                    font-size: 0.9rem;
+                    margin: 0;
+                }
+
+                .chef-info p {
+                    font-size: 0.8rem;
+                    margin: 2px 0 0 0;
+                }
+
+                /* Form sections */
+                .recipe-form {
+                    gap: var(--spacing-xl);
+                }
+
+                .form-section h2 {
+                    font-size: 1.1rem;
+                    color: var(--color-accent);
+                }
+
+                .form-section h3 {
+                    font-size: 1rem;
+                }
+
+                /* Form rows stack vertically */
+                .form-row {
+                    flex-direction: column;
+                    gap: 0;
+                }
+
+                /* Input fields */
+                input, textarea, select {
+                    padding: var(--spacing-sm);
+                    font-size: 0.95rem;
+                }
+
+                /* Ingredient rows - horizontal layout on mobile */
+                .ingredient-row {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: var(--spacing-sm);
+                    padding: 0;
+                    align-items: flex-end;
+                }
+
+                /* Ingredient name takes full width on first row */
+                .ingredient-row .ingredient-field:first-child {
+                    flex: 1 1 100%;
+                }
+
+                /* Quantity field */
+                .ingredient-row .ingredient-field:nth-child(2) {
+                    flex: 1 1 80px;
+                    min-width: 80px;
+                }
+
+                /* Unit field */
+                .ingredient-row .ingredient-field:nth-child(3) {
+                    flex: 2 1 120px;
+                    min-width: 100px;
+                }
+
+                /* Remove button - sits next to quantity/unit */
+                .ingredient-row .remove-ingredient {
+                    flex: 0 0 auto;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    margin-bottom: 0;
+                    align-self: center;
+                }
+
+                .ingredient-field label {
+                    font-size: 0.8rem;
+                }
+
+                .ingredient-field input,
+                .ingredient-field select {
+                    margin-bottom: 0;
+                }
+
+                /* Add buttons */
+                .add-ingredient, .add-step {
+                    width: 100%;
+                    padding: var(--spacing-sm) var(--spacing-md);
+                    font-size: 0.95rem;
+                }
+
+                /* Checkbox grid */
+                .checkbox-grid {
+                    grid-template-columns: 1fr;
+                    gap: var(--spacing-xs);
+                }
+
+                .checkbox-label {
+                    padding: var(--spacing-sm);
+                }
+
+                /* Steps */
+                .steps-list {
+                    max-height: none;
+                    padding-right: 0;
+                    margin-bottom: var(--spacing-xs);
+                }
+
+
+                .step-header h3 {
+                    font-size: 0.95rem;
+                }
+
+                .remove-step {
+                    padding: var(--spacing-xs) var(--spacing-sm);
+                    font-size: 0.8rem;
+                }
+
+                /* Form actions */
+                .form-actions {
+                    flex-direction: column;
+                    gap: var(--spacing-sm);
+                    padding-top: var(--spacing-lg);
                 }
 
                 .form-actions button {
                     width: 100%;
+                    padding: var(--spacing-sm) var(--spacing-md);
+                    font-size: 1rem;
+                    min-width: unset;
+                }
+
+                /* Error messages */
+                .error-message {
+                    padding: var(--spacing-sm);
+                    font-size: 0.9rem;
+                }
+
+                /* Section description */
+                .section-description {
+                    font-size: 0.85rem;
                 }
             }
         `
@@ -839,6 +963,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
                             <h2>Ingredients</h2>
                             <p class="section-description">Add ingredients with their quantities per serving</p>
                         ${this.formData.ingredients.map((ingredient, index) => html`
+                            <div class="ingredient-list">
                             <div class="ingredient-container">
                                 <div class="ingredient-row">
                                     <div class="ingredient-field">
@@ -890,6 +1015,7 @@ export class RecipeCreateElement extends View<Model, Msg> {
                                         ×
                                     </button>
                                 </div>
+                            </div>
                             </div>
                         `)}
                             <button type="button" class="add-ingredient" @click=${this.addIngredient}>

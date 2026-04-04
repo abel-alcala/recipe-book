@@ -247,6 +247,11 @@ export class AppHeader extends LitElement {
                 user-select: none;
             }
 
+            /* Dark mode toggle label - space between text and switch */
+            menu label:has(.switch) {
+                justify-content: space-between;
+            }
+
             menu a:hover, menu label:hover {
                 background-color: var(--color-background-hover);
                 color: var(--color-link-hover);
@@ -255,9 +260,12 @@ export class AppHeader extends LitElement {
             /* Dark Mode Toggle Switch */
             .switch {
                 position: relative;
-                display: inline-block;
+                display: inline-flex;
+                align-items: center;
                 width: 44px;
                 height: 24px;
+                flex-shrink: 0;
+                vertical-align: middle;
             }
 
             .switch input {
@@ -315,22 +323,57 @@ export class AppHeader extends LitElement {
 
             @media (max-width: 775px) {
                 .header-container {
-                    flex-direction: column;
-                    align-items: flex-start;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-between;
                 }
 
                 .main-nav {
-                    width: 100%;
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: var(--spacing-sm);
+                    width: auto;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: var(--spacing-md);
                 }
 
                 .main-nav nav {
-                    width: 100%;
-                    justify-content: flex-start;
-                    margin-bottom: var(--spacing-sm);
-                    flex-wrap: wrap;
+                    width: auto;
+                    justify-content: center;
+                    margin-bottom: 0;
+                }
+
+                /* Hide text on mobile, show icons only */
+                .main-nav nav a {
+                    padding: var(--spacing-sm);
+                    width: 40px;
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                }
+
+                .nav-text,
+                .greeting {
+                    display: none;
+                }
+
+                .main-nav nav a .icon {
+                    margin-right: 0;
+                }
+
+                a[slot="actuator"] {
+                    width: 40px;
+                    height: 40px;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                }
+
+                .icon#profile {
+                    width: 1.8em;
+                    height: 1.8em;
                 }
             }
         `
@@ -349,7 +392,12 @@ export class AppHeader extends LitElement {
                 </div>
                 <div class="main-nav">
                     <nav class="when-signed-in" >
-                        <a href="/app/recipe/create">Add Recipe</a>
+                        <a href="/app/recipe/create">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            <span class="nav-text">Add Recipe</span>
+                        </a>
                     </nav>
                     <mu-dropdown>
                         <a slot="actuator" >

@@ -125,7 +125,6 @@ export const componentStyles = css`
 
     label span {
         display: block;
-        margin-bottom: var(--spacing-xs);
         font-weight: bold;
         color: var(--color-accent);
     }

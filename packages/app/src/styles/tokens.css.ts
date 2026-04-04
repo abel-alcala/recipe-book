@@ -48,7 +48,7 @@ export const tokenStyles = css`
         --color-background-hover: rgba(49, 130, 206, 0.1);
         --color-text: #2c3e50;
         --color-text-header: #1a202c;
-        --color-text-inverted: #2c3e50;
+        --color-text-inverted: #ffffff;
         --color-text-muted: #718096;
         --color-primary: #2c5282;
         --color-accent: #2c5282;

@@ -168,6 +168,14 @@ export class ChefEditElement extends View<Model, Msg> {
                 margin: 0 auto;
                 padding-bottom: var(--spacing-xl);
             }
+            
+            .headers{
+                display: flex;
+                align-content: center;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                justify-content: space-between;
+            }
 
             .page-header {
                 margin-bottom: var(--spacing-xl);
@@ -208,8 +216,6 @@ export class ChefEditElement extends View<Model, Msg> {
                 margin-top: 0;
                 font-size: 1.4rem;
                 color: var(--color-primary);
-                padding-bottom: var(--spacing-sm);
-                border-bottom: 1px solid var(--color-border);
             }
 
             label {
@@ -280,15 +286,14 @@ export class ChefEditElement extends View<Model, Msg> {
             }
 
             .add-button {
-                padding: var(--spacing-sm) var(--spacing-md);
                 background: var(--color-primary);
+                width: fit-content;
+                margin-bottom: var(--spacing-sm);
                 color: white;
                 border: none;
-                border-radius: var(--border-radius-sm);
                 cursor: pointer;
                 font-size: 0.9rem;
                 font-weight: 500;
-                margin-left: 4rem;
             }
 
             .form-actions {
@@ -338,14 +343,17 @@ export class ChefEditElement extends View<Model, Msg> {
             }
 
             @media (max-width: 768px) {
-                .cancel-button {
-                    width: 100%;
-                }
-                .page-header h1 {
-                    font-size: 1.6rem;
+                .page-header {
+                    margin-bottom: var(--spacing-sm);
+                    h1 {
+                        font-size: 1.6rem;
+                    }
                 }
                 .form-section h2 {
                     font-size: 1.2rem;
+                }
+                .info-sections {
+                    gap: var(--spacing-sm);
                 }
             }
         `
@@ -404,14 +412,16 @@ export class ChefEditElement extends View<Model, Msg> {
                         </div>
 
                         <div class="form-section favorite-dishes">
-                            <h2>Favorite Dishes
+                            <div class="headers">
+                                <h2>Favorite Dishes
+                                </h2>
                                 <button
                                         type="button"
                                         class="add-button"
                                         @click=${this.addFavoriteDish}>
                                     Add Favorite Dish
                                 </button>
-                            </h2>
+                            </div>
                             <div id="favorite-dishes-container">
                                 ${this.chef.favoriteDishes.map((dish, index) => html`
                                     <div class="list-item">

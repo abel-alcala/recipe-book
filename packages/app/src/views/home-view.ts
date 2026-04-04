@@ -229,6 +229,25 @@ export class HomeViewElement extends View<Model, Msg> {
                 justify-content: center;
             }
 
+            .cuisine-select {
+                display: none;
+                width: 100%;
+                padding: var(--spacing-md);
+                border: 2px solid var(--color-border);
+                border-radius: var(--border-radius-md);
+                background: var(--color-background-card);
+                color: var(--color-text);
+                font-size: 1rem;
+                font-family: var(--font-body);
+                cursor: pointer;
+                transition: border-color 0.2s;
+            }
+
+            .cuisine-select:focus {
+                outline: none;
+                border-color: var(--color-accent);
+            }
+
             .cuisine-chip {
                 display: inline-flex;
                 align-items: center;
@@ -469,14 +488,39 @@ export class HomeViewElement extends View<Model, Msg> {
                     gap: var(--spacing-md);
                 }
 
-                .cuisine-filter {
-                    justify-content: flex-start;
+                .filter-section {
+                    display: block;
                 }
 
                 .filter-header {
                     flex-direction: column;
+                    gap: var(--spacing-md);
+                    align-items: stretch;
+                }
+
+                .filter-left {
+                    flex-direction: column;
                     gap: var(--spacing-sm);
-                    align-items: flex-start;
+                }
+
+                .filter-title {
+                    font-size: 1rem;
+                }
+
+                /* Show select dropdown on mobile, hide chips */
+                .cuisine-select {
+                    display: block;
+                }
+
+                .cuisine-chip {
+                    display: none;
+                }
+
+                .filter-summary {
+                    text-align: left;
+                    margin-left: 0;
+                    border-right: none;
+                    border-left: 4px solid var(--color-accent);
                 }
             }
         `
@@ -519,10 +563,29 @@ export class HomeViewElement extends View<Model, Msg> {
                             </svg>
                             Filter by Cuisine
                         </div>
+
+                        <!-- Mobile Select Dropdown -->
+                        <select
+                            class="cuisine-select"
+                            .value=${this.selectedCuisine}
+                            @change=${(e: Event) => {
+                                const value = (e.target as HTMLSelectElement).value;
+                                this.selectedCuisine = value;
+                            }}
+                        >
+                            <option value="">All Cuisines</option>
+                            ${availableCuisines.map(cuisine => html`
+                                <option value="${cuisine}" ?selected=${this.selectedCuisine === cuisine}>
+                                    ${cuisine}
+                                </option>
+                            `)}
+                        </select>
+
+                        <!-- Desktop Chips -->
                         ${availableCuisines.map(cuisine => html`
                             <div
-                                    class="cuisine-chip ${this.selectedCuisine === cuisine ? 'selected' : ''}"
-                                    @click=${() => this.handleCuisineToggle(cuisine)}
+                                class="cuisine-chip ${this.selectedCuisine === cuisine ? 'selected' : ''}"
+                                @click=${() => this.handleCuisineToggle(cuisine)}
                             >
                                 <span>${cuisine}</span>
                             </div>
@@ -533,8 +596,6 @@ export class HomeViewElement extends View<Model, Msg> {
                             Showing ${filteredCount} of ${totalCount} recipes
                         </div>
                     ` : ''}
-                </div>
-                <div class="cuisine-filter">
                 </div>
             </div>
         `;
