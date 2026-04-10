@@ -167,6 +167,14 @@ export class ChefViewElement extends View<Model, Msg> {
                 color: var(--color-text);
                 text-align: center;
                 padding: var(--spacing-xs);
+                overflow: hidden;
+            }
+
+            .highlight-circle img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
             }
 
             .highlight-label {
@@ -444,12 +452,20 @@ export class ChefViewElement extends View<Model, Msg> {
                 <div class="highlights-section">
                     <h2 class="highlights-title">Favorite Dishes</h2>
                     <div class="highlights">
-                        ${this.chef.favoriteDishes.map(dish => html`
-                                <div class="highlight">
-                                    <div class="highlight-circle">${dish}</div>
-                                    <div class="highlight-label">${dish}</div>
-                                </div>
-                            `)}
+                        ${this.chef.favoriteDishes.map(dish => {
+                                const match = this.chef!.recipes.find(r => r.name === dish);
+                                const imgSrc = match?.imageUrl || (match ? `/images/${match.href.split('/').pop()}.png` : '');
+                                return html`
+                                    <div class="highlight">
+                                        <div class="highlight-circle">
+                                            ${imgSrc
+                                                ? html`<img src="${imgSrc}" alt="${dish}">`
+                                                : dish}
+                                        </div>
+                                        <div class="highlight-label">${dish}</div>
+                                    </div>
+                                `;
+                            })}
                     </div>
                 </div>
 

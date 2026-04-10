@@ -94,11 +94,7 @@ export class HomeViewElement extends View<Model, Msg> {
             .hero-section h1 {
                 font-size: 3rem;
                 margin-bottom: var(--spacing-md);
-                background: linear-gradient(135deg,
-                var(--color-primary) 0%,
-                var(--color-accent-alt) 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
+                color: var(--color-primary);
                 position: relative;
                 z-index: 1;
             }
@@ -127,13 +123,13 @@ export class HomeViewElement extends View<Model, Msg> {
                 margin-left: auto;
                 margin-right: auto;
             }
-
+            
             .toggle-button {
                 flex: 1;
                 padding: var(--spacing-md) var(--spacing-lg);
                 border: none;
                 background: transparent;
-                color: var(--color-text);
+                color: white;
                 font-size: 1.1rem;
                 font-weight: 600;
                 cursor: pointer;
@@ -142,11 +138,7 @@ export class HomeViewElement extends View<Model, Msg> {
                 transition: color 0.3s ease;
                 border-radius: var(--border-radius-md);
             }
-
-            .toggle-button.active {
-                color: var(--color-text-inverted);
-
-            }
+            
 
             .toggle-indicator {
                 position: absolute;
@@ -323,8 +315,9 @@ export class HomeViewElement extends View<Model, Msg> {
                 border: 1px solid var(--color-border);
                 border-radius: var(--border-radius-lg);
                 overflow: hidden;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                cursor: pointer;
+                transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                            box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                            border-color 0.2s ease;
                 position: relative;
                 text-decoration: none;
                 color: inherit;
@@ -334,25 +327,33 @@ export class HomeViewElement extends View<Model, Msg> {
             .item-card::before {
                 content: '';
                 position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: linear-gradient(135deg,
-                transparent 0%,
-                rgba(158, 206, 106, 0.1) 100%);
+                inset: 0;
+                background: linear-gradient(
+                    135deg,
+                    transparent 0%,
+                    color-mix(in srgb, var(--color-accent) 8%, transparent) 100%
+                );
                 opacity: 0;
-                transition: opacity 0.3s ease;
+                transition: opacity 0.25s ease;
+                pointer-events: none;
             }
 
             .item-card:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+                transform: translateY(-6px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08),
+                            0 12px 24px rgba(0, 0, 0, 0.12);
                 border-color: var(--color-accent);
+                text-decoration: none;
             }
 
             .item-card:hover::before {
                 opacity: 1;
+            }
+
+            .item-card:focus-visible {
+                outline: 2px solid var(--color-accent);
+                outline-offset: 3px;
+                border-color: var(--color-accent);
             }
 
             .item-image {
@@ -376,7 +377,11 @@ export class HomeViewElement extends View<Model, Msg> {
                 font-size: 1.3rem;
                 margin-bottom: var(--spacing-sm);
                 color: var(--color-primary);
-                transition: color 0.3s ease;
+                transition: color 0.25s ease;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
             }
 
             .item-card:hover .item-content h3 {
@@ -395,10 +400,11 @@ export class HomeViewElement extends View<Model, Msg> {
 
             .item-meta {
                 display: flex;
-                gap: var(--spacing-lg);
+                gap: var(--spacing-md);
                 font-size: 0.9rem;
                 color: var(--color-text-muted);
                 flex-wrap: wrap;
+                align-items: center;
             }
 
             .meta-item {
@@ -414,18 +420,28 @@ export class HomeViewElement extends View<Model, Msg> {
             }
 
             .difficulty-badge {
-                background: var(--color-accent);
-                color: var(--color-text-inverted);
                 padding: var(--spacing-xs) var(--spacing-sm);
                 border-radius: var(--border-radius-sm);
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 font-weight: 600;
                 text-transform: capitalize;
+                letter-spacing: 0.02em;
             }
 
-            .difficulty-easy { background: #10b981; }
-            .difficulty-medium { background: #f59e0b; }
-            .difficulty-hard { background: #ef4444; }
+            .difficulty-easy {
+                background: rgba(16, 185, 129, 0.15);
+                color: #0d9b6e;
+            }
+
+            .difficulty-medium {
+                background: rgba(217, 119, 6, 0.15);
+                color: #b45309;
+            }
+
+            .difficulty-hard {
+                background: rgba(220, 38, 38, 0.15);
+                color: #dc2626;
+            }
 
             .loading-container {
                 display: flex;
@@ -484,10 +500,6 @@ export class HomeViewElement extends View<Model, Msg> {
                     max-width: 100%;
                 }
 
-                .item-meta {
-                    gap: var(--spacing-md);
-                }
-
                 .filter-section {
                     display: block;
                 }
@@ -521,6 +533,29 @@ export class HomeViewElement extends View<Model, Msg> {
                     margin-left: 0;
                     border-right: none;
                     border-left: 4px solid var(--color-accent);
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .item-card,
+                .item-card::before,
+                .item-image,
+                .item-content h3 {
+                    transition: none;
+                }
+
+                .item-card:hover {
+                    transform: none;
+                }
+
+                .item-card:hover .item-image {
+                    transform: none;
+                }
+
+                .filter-section,
+                .filter-section.hidden {
+                    transition: none;
+                    transform: none;
                 }
             }
         `
@@ -681,7 +716,7 @@ export class HomeViewElement extends View<Model, Msg> {
                             </span>
                             <span class="meta-item">
                                 <svg class="meta-icon" viewBox="0 0 24 24">
-                                    <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                                 </svg>
                                 ${recipe.servingSize}
                             </span>

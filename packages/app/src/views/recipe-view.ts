@@ -58,6 +58,7 @@ export class RecipeViewElement extends View<Model, Msg> {
             oldValue !== newValue &&
             newValue
         ) {
+            this.servingCount = 1;
             console.log("Loading recipe:", newValue);
             this.dispatchMessage([
                 "recipe/load",
@@ -77,18 +78,62 @@ export class RecipeViewElement extends View<Model, Msg> {
     }
 
     private parseServingSize(servingSize: string): number {
-        const match = servingSize.match(/(\d+)/);
-        return match ? parseInt(match[1], 10) : 1;
+        if (!servingSize) return 1;
+        const rangeMatch = servingSize.match(/(\d+)\s*[-–]\s*(\d+)/);
+        if (rangeMatch) return parseInt(rangeMatch[1], 10);
+        const singleMatch = servingSize.match(/(\d+)/);
+        return singleMatch ? parseInt(singleMatch[1], 10) : 1;
+    }
+
+    private parseQuantity(quantity: string): number | null {
+        const trimmed = quantity.trim();
+        // Mixed number: "1 3/4"
+        const mixedMatch = trimmed.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+        if (mixedMatch) {
+            const den = parseInt(mixedMatch[3], 10);
+            if (den === 0) return null;
+            return parseInt(mixedMatch[1], 10) + parseInt(mixedMatch[2], 10) / den;
+        }
+        // Simple fraction: "3/4", "1/3"
+        const fractionMatch = trimmed.match(/^(\d+)\/(\d+)$/);
+        if (fractionMatch) {
+            const den = parseInt(fractionMatch[2], 10);
+            if (den === 0) return null;
+            return parseInt(fractionMatch[1], 10) / den;
+        }
+        // Decimal or integer: "0.5", "200", "1.5"
+        const num = parseFloat(trimmed);
+        return isNaN(num) ? null : num;
+    }
+
+    private formatQuantity(value: number): string {
+        if (value <= 0) return "0";
+        const TOLERANCE = 0.04;
+        const fractions: Array<[number, string]> = [
+            [1/8, "1/8"], [1/4, "1/4"], [1/3, "1/3"],
+            [1/2, "1/2"], [2/3, "2/3"], [3/4, "3/4"],
+        ];
+        const whole = Math.floor(value);
+        const remainder = value - whole;
+        let fracStr = "";
+        if (remainder > TOLERANCE) {
+            if (Math.abs(remainder - 1) <= TOLERANCE) return String(whole + 1);
+            for (const [frac, label] of fractions) {
+                if (Math.abs(remainder - frac) <= TOLERANCE) { fracStr = label; break; }
+            }
+            if (!fracStr) return value.toFixed(1).replace(/\.0$/, "");
+        }
+        if (whole === 0) return fracStr || "0";
+        if (!fracStr) return String(whole);
+        return `${whole} ${fracStr}`;
     }
 
     private calculateQuantity(originalQuantity: string, baseServings: number): string {
-        const num = parseFloat(originalQuantity);
-        if (isNaN(num)) return originalQuantity;
-        const scaled = (num / baseServings) * this.servingCount;
-        if (scaled === Math.floor(scaled)) {
-            return scaled.toString();
-        }
-        return scaled.toFixed(1).replace(/\.0$/, '');
+        const parsed = this.parseQuantity(originalQuantity);
+        if (parsed === null) return originalQuantity;
+        if (baseServings <= 0) return originalQuantity;
+        const scaled = (parsed / baseServings) * this.servingCount;
+        return this.formatQuantity(scaled);
     }
 
     private handleServingChange(delta: number) {
