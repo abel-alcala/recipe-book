@@ -1,5 +1,6 @@
 import {model, Schema} from "mongoose";
 import {MealPlanData, RecipeReference} from "../models/mealplan-model";
+import Recipes from "./recipe-service";
 
 const RecipeReferenceSchema = new Schema<RecipeReference>({
     name: {type: String, required: true},
@@ -26,10 +27,29 @@ function index(): Promise<MealPlanData[]> {
     return MealPlanModel.find();
 }
 
+function extractIdName(href: string): string {
+    if (href.startsWith('/app/recipe/')) return href.slice('/app/recipe/'.length);
+    if (href.startsWith('http')) return href.split('/').pop() || '';
+    return href;
+}
+
 async function get(idName: string): Promise<MealPlanData> {
-    const mealplan = await MealPlanModel.findOne({idName: idName});
+    const mealplan = await MealPlanModel.findOne({idName});
     if (!mealplan) throw `${idName} Not Found`;
-    return mealplan;
+
+    const idNames = mealplan.recipes.map(r => extractIdName(r.href)).filter(Boolean);
+    const imageMap = await Recipes.getImageMap(idNames);
+
+    return {
+        ...mealplan.toObject(),
+        recipes: mealplan.recipes.map(r => ({
+            name: r.name,
+            href: r.href,
+            day: r.day,
+            mealType: r.mealType,
+            imageUrl: imageMap.get(extractIdName(r.href))
+        }))
+    } as MealPlanData;
 }
 
 function create(json: MealPlanData): Promise<MealPlanData> {

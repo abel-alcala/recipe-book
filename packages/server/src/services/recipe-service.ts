@@ -84,4 +84,13 @@ function remove(idName: string): Promise<void> {
     );
 }
 
-export default {index, get, create, update, remove};
+async function getImageMap(idNames: string[]): Promise<Map<string, string>> {
+    if (!idNames.length) return new Map();
+    const recipes = await RecipeModel.find(
+        { idName: { $in: idNames } },
+        { idName: 1, imageUrl: 1, _id: 0 }
+    ).lean<{ idName: string; imageUrl: string }[]>();
+    return new Map(recipes.map(r => [r.idName, r.imageUrl]));
+}
+
+export default {index, get, create, update, remove, getImageMap};

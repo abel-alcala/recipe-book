@@ -1,6 +1,7 @@
 export interface RecipeReference {
     name: string;
     href: string;
+    imageUrl?: string;
     day?: string;
     mealType?: string;
 }
