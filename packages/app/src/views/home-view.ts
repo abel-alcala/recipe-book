@@ -123,6 +123,9 @@ export class HomeViewElement extends View<Model, Msg> {
                 margin-left: auto;
                 margin-right: auto;
             }
+            .toggle-button:hover {
+                background: transparent;
+            }
             
             .toggle-button {
                 flex: 1;
@@ -164,6 +167,7 @@ export class HomeViewElement extends View<Model, Msg> {
                 display: flex;
                 margin-bottom: var(--spacing-xl);
                 opacity: 1;
+                width: 100%;
                 transform: translateY(0);
                 transition: all 0.3s ease;
             }
@@ -178,6 +182,7 @@ export class HomeViewElement extends View<Model, Msg> {
             .filter-header {
                 display: flex;
                 align-items: center;
+                width: 100%;
                 justify-content: space-between;
                 gap: var(--spacing-lg);
                 margin-bottom: var(--spacing-md);
@@ -222,9 +227,8 @@ export class HomeViewElement extends View<Model, Msg> {
             }
 
             .cuisine-select {
-                display: none;
-                width: 100%;
-                padding: var(--spacing-md);
+                display: block;
+                padding: var(--spacing-sm) var(--spacing-md);
                 border: 2px solid var(--color-border);
                 border-radius: var(--border-radius-md);
                 background: var(--color-background-card);
@@ -232,75 +236,36 @@ export class HomeViewElement extends View<Model, Msg> {
                 font-size: 1rem;
                 font-family: var(--font-body);
                 cursor: pointer;
-                transition: border-color 0.2s;
+                transition: border-color 0.2s, box-shadow 0.2s;
+                min-width: 200px;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239ece6a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right var(--spacing-sm) center;
+                background-size: 20px;
+                padding-right: calc(var(--spacing-xl) + 8px);
+            }
+
+            .cuisine-select:hover {
+                border-color: var(--color-accent);
             }
 
             .cuisine-select:focus {
                 outline: none;
                 border-color: var(--color-accent);
-            }
-
-            .cuisine-chip {
-                display: inline-flex;
-                align-items: center;
-                padding: var(--spacing-sm) var(--spacing-md);
-                background: var(--color-background-card);
-                border: 2px solid var(--color-border);
-                border-radius: var(--border-radius-pill);
-                cursor: pointer;
-                transition: all 0.2s ease;
-                font-size: 0.9rem;
-                font-weight: 500;
-                user-select: none;
-                position: relative;
-                overflow: hidden;
-            }
-
-            .cuisine-chip::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: linear-gradient(135deg,
-                var(--color-accent) 0%,
-                var(--color-accent-alt) 100%);
-                opacity: 0;
-                transition: opacity 0.2s ease;
-            }
-
-            .cuisine-chip span {
-                position: relative;
-                z-index: 1;
-                transition: color 0.2s ease;
-            }
-
-            .cuisine-chip:hover {
-                border-color: var(--color-accent);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(158, 206, 106, 0.2);
-            }
-
-            .cuisine-chip.selected {
-                border-color: var(--color-accent);
-                color: var(--color-text-inverted);
-                box-shadow: 0 4px 12px rgba(158, 206, 106, 0.3);
-            }
-
-            .cuisine-chip.selected::before {
-                opacity: 1;
+                box-shadow: 0 0 0 3px rgba(158, 206, 106, 0.2);
             }
 
             .filter-summary {
                 text-align: center;
-                padding: var(--spacing-sm);
+                padding: var(--spacing-sm) var(--spacing-md);
                 background: var(--color-background-card);
                 border-radius: var(--border-radius-md);
                 border-right: 4px solid var(--color-accent);
                 font-size: 0.9rem;
                 color: var(--color-text);
                 margin-left: auto;
+                white-space: nowrap;
             }
 
             .content-grid {
@@ -596,10 +561,9 @@ export class HomeViewElement extends View<Model, Msg> {
                             <svg class="filter-icon" viewBox="0 0 24 24">
                                 <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
                             </svg>
-                            Filter by Cuisine
+                            Cuisine
                         </div>
 
-                        <!-- Mobile Select Dropdown -->
                         <select
                             class="cuisine-select"
                             .value=${this.selectedCuisine}
@@ -615,16 +579,6 @@ export class HomeViewElement extends View<Model, Msg> {
                                 </option>
                             `)}
                         </select>
-
-                        <!-- Desktop Chips -->
-                        ${availableCuisines.map(cuisine => html`
-                            <div
-                                class="cuisine-chip ${this.selectedCuisine === cuisine ? 'selected' : ''}"
-                                @click=${() => this.handleCuisineToggle(cuisine)}
-                            >
-                                <span>${cuisine}</span>
-                            </div>
-                        `)}
                     </div>
                     ${hasFilter ? html`
                         <div class="filter-summary">
