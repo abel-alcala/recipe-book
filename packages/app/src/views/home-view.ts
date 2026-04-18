@@ -126,13 +126,18 @@ export class HomeViewElement extends View<Model, Msg> {
             .toggle-button:hover {
                 background: transparent;
             }
+
+            .toggle-button:active {
+                color: var(--color-text);
+            }
+            
             
             .toggle-button {
                 flex: 1;
                 padding: var(--spacing-md) var(--spacing-lg);
                 border: none;
                 background: transparent;
-                color: white;
+                color: var(--color-text);
                 font-size: 1.1rem;
                 font-weight: 600;
                 cursor: pointer;
@@ -140,6 +145,10 @@ export class HomeViewElement extends View<Model, Msg> {
                 z-index: 2;
                 transition: color 0.3s ease;
                 border-radius: var(--border-radius-md);
+            }
+
+            .toggle-button.active {
+                color: var(--color-text-inverted);
             }
             
 
@@ -528,14 +537,6 @@ export class HomeViewElement extends View<Model, Msg> {
 
     private handleViewToggle(mode: 'recipes' | 'mealplans') {
         this.viewMode = mode;
-    }
-
-    private handleCuisineToggle(cuisineName: string) {
-        if (this.selectedCuisine === cuisineName) {
-            this.selectedCuisine = '';
-        } else {
-            this.selectedCuisine = cuisineName;
-        }
     }
 
     private getAvailableCuisines(): string[] {

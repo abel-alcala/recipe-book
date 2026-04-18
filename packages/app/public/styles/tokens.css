@@ -35,6 +35,7 @@ body.light-mode {
     --color-background-page: #f5f7fa;
     --color-background-header: #ffffff;
     --color-text: #2c3e50;
+    --color-text-inverted: #2c3e50;
     --color-text-header: #1a202c;
     --color-accent: #2c5282;
     --color-grid: #ffffff;
